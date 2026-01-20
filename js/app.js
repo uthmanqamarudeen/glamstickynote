@@ -572,45 +572,45 @@ function renderNotes(searchQuery = '') {
     if (DOM.doneNotes.children.length === 0) {
         DOM.doneNotes.appendChild(createEmptyState('done'));
     }
-}
 
-function createEmptyState(type) {
-    const el = document.createElement('div');
-    el.className = 'empty-state';
 
-    let icon = '📝';
-    let text = 'No notes';
+    function createEmptyState(type) {
+        const el = document.createElement('div');
+        el.className = 'empty-state';
 
-    switch (type) {
-        case 'todo':
-            icon = '🎉';
-            text = 'All caught up!';
-            break;
-        case 'doing':
-            icon = '⏳';
-            text = 'Nothing in progress';
-            break;
-        case 'done':
-            icon = '✨';
-            text = 'No completed tasks yet';
-            break;
-    }
+        let icon = '📝';
+        let text = 'No notes';
 
-    el.innerHTML = `
+        switch (type) {
+            case 'todo':
+                icon = '🎉';
+                text = 'All caught up!';
+                break;
+            case 'doing':
+                icon = '⏳';
+                text = 'Nothing in progress';
+                break;
+            case 'done':
+                icon = '✨';
+                text = 'No completed tasks yet';
+                break;
+        }
+
+        el.innerHTML = `
         <div class="empty-state-icon">${icon}</div>
         <p class="empty-state-text">${text}</p>
     `;
-    return el;
-}
+        return el;
+    }
 
-// Update counts (for filtered view)
-updateCounts(filteredNotes);
+    // Update counts (for filtered view)
+    updateCounts(filteredNotes);
 
-// Update tags panel
-renderTagsPanel();
+    // Update tags panel
+    renderTagsPanel();
 
-// Update calendar highlights
-renderCalendar();
+    // Update calendar highlights
+    renderCalendar();
 }
 
 function updateCounts(notesToCount = null) {
