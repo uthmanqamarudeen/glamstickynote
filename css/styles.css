@@ -600,6 +600,11 @@ body {
     border-radius: var(--radius-md);
     padding: var(--space-lg);
     padding-top: var(--space-xl);
+    width: 100%;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
     box-shadow: var(--shadow-note);
     cursor: grab;
     transition: all var(--transition-normal);
@@ -1531,7 +1536,8 @@ body {
         display: none;
     }
 
-    .search-container {
+    .search-container,
+    .sort-container {
         display: none;
     }
 
