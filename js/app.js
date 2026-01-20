@@ -1142,21 +1142,51 @@ function init() {
     }
 
     // PWA Installation
+    // PWA Installation
     let deferredPrompt;
+
+    // Detect iOS
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    // Show button immediately on iOS
+    if (isIOS) {
+        DOM.installApp.style.display = 'flex';
+    }
+
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
         DOM.installApp.style.display = 'flex';
+        console.log('PWA install prompt ready');
     });
 
     DOM.installApp.addEventListener('click', async () => {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') {
-            deferredPrompt = null;
-            DOM.installApp.style.display = 'none';
+        // iOS Instructions
+        if (isIOS) {
+            showToast('To install: Tap Share ⬆️ → Add to Home Screen ➕', 'info');
+            return;
         }
+
+        // Android/Desktop Prompt
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                deferredPrompt = null;
+                DOM.installApp.style.display = 'none';
+            }
+            return;
+        }
+
+        // Fallback
+        showToast('Install this app via your browser menu', 'info');
+    });
+
+    // Hide button if installed
+    window.addEventListener('appinstalled', () => {
+        DOM.installApp.style.display = 'none';
+        deferredPrompt = null;
+        console.log('PWA installed successfully');
     });
 
     console.log('✨ GlamStickyNote initialized!');
