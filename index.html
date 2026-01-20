@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="GlamStickyNote - A beautiful digital sticky notes app for daily schedule and task management">
+    <title>GlamStickyNote | Digital Sticky Notes</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- PWA Support -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="apple-touch-icon" href="assets/icon-192.png">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">Calendar</h2>
+                <div class="sidebar-header-actions">
+                    <div class="nav-arrows">
+                        <button class="nav-btn" id="prevMonth" aria-label="Previous month">‹</button>
+                        <button class="nav-btn" id="nextMonth" aria-label="Next month">›</button>
+                    </div>
+                    <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">×</button>
+                </div>
+            </div>
+
+            <!-- Mini Calendar -->
+            <div class="mini-calendar" id="miniCalendar">
+                <div class="calendar-header" id="calendarHeader"></div>
+                <div class="calendar-weekdays">
+                    <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+                </div>
+                <div class="calendar-days" id="calendarDays"></div>
+            </div>
+
+            <!-- Quick Nav -->
+            <nav class="quick-nav">
+                <button class="nav-item" id="navAll">
+                    <span class="nav-icon">📋</span>
+                    <span>All Notes</span>
+                </button>
+                <button class="nav-item active" id="navToday">
+                    <span class="nav-icon">📅</span>
+                    <span>Today</span>
+                </button>
+                <button class="nav-item" id="navUpcoming">
+                    <span class="nav-icon">📆</span>
+                    <span>Upcoming</span>
+                </button>
+                <button class="nav-item" id="navTags">
+                    <span class="nav-icon">🏷️</span>
+                    <span>Tags</span>
+                </button>
+                <button class="nav-item" id="navSettings">
+                    <span class="nav-icon">⚙️</span>
+                    <span>Settings</span>
+                </button>
+                <button class="nav-item" id="installApp" style="display: none;">
+                    <span class="nav-icon">📲</span>
+                    <span>Install App</span>
+                </button>
+            </nav>
+
+            <!-- Tags Panel (hidden by default) -->
+            <div class="tags-panel" id="tagsPanel" style="display: none;">
+                <h3 class="palette-title">Filter by Tag</h3>
+                <div class="tags-list" id="tagsList">
+                    <!-- Tags will be populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Color Palette -->
+            <div class="color-palette">
+                <h3 class="palette-title">Note Colors</h3>
+                <div class="color-options" id="colorOptions">
+                    <button class="color-btn active" data-color="yellow" style="background: var(--note-yellow)"
+                        aria-label="Yellow"></button>
+                    <button class="color-btn" data-color="pink" style="background: var(--note-pink)"
+                        aria-label="Pink"></button>
+                    <button class="color-btn" data-color="mint" style="background: var(--note-mint)"
+                        aria-label="Mint"></button>
+                    <button class="color-btn" data-color="lavender" style="background: var(--note-lavender)"
+                        aria-label="Lavender"></button>
+                    <button class="color-btn" data-color="coral" style="background: var(--note-coral)"
+                        aria-label="Coral"></button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="header-left">
+                    <button class="menu-toggle" id="menuToggle" aria-label="Toggle sidebar">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                    <h1 class="app-title">
+                        <span class="title-glam">Glam</span><span class="title-sticky">StickyNote</span>
+                    </h1>
+                    <div class="filter-indicator" id="filterIndicator" style="display: none;">
+                        <span class="filter-text" id="filterText">Today</span>
+                        <button class="clear-filter" id="clearFilter" aria-label="Clear filter">×</button>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="search-container">
+                        <input type="search" class="search-input" id="searchInput" placeholder="Search notes..."
+                            aria-label="Search notes">
+                        <span class="search-icon">🔍</span>
+                    </div>
+                    <div class="user-avatar" id="userAvatar">
+                        <span>👤</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Quick Add -->
+            <div class="quick-add-container">
+                <input type="text" class="quick-add-input" id="quickAddInput"
+                    placeholder="✏️ Quick add a note... (press Enter)">
+                <div class="quick-add-hint">Press <strong>?</strong> for keyboard shortcuts</div>
+            </div>
+
+            <!-- Kanban Board -->
+            <section class="kanban-board" id="kanbanBoard">
+                <!-- To Do Column -->
+                <div class="kanban-column" data-column="todo">
+                    <div class="column-header">
+                        <h2 class="column-title">To Do</h2>
+                        <span class="task-count" id="todoCount">0</span>
+                        <button class="column-menu" aria-label="Column options">⋯</button>
+                    </div>
+                    <div class="notes-container" id="todoNotes" data-column="todo">
+                        <!-- Notes will be added here dynamically -->
+                    </div>
+                    <button class="add-note-btn" data-column="todo" aria-label="Add new note">
+                        <span class="plus-icon">+</span>
+                        <span>Add Note</span>
+                    </button>
+                </div>
+
+                <!-- In Progress Column -->
+                <div class="kanban-column" data-column="inprogress">
+                    <div class="column-header">
+                        <h2 class="column-title">In Progress</h2>
+                        <span class="task-count" id="inprogressCount">0</span>
+                        <button class="column-menu" aria-label="Column options">⋯</button>
+                    </div>
+                    <div class="notes-container" id="inprogressNotes" data-column="inprogress">
+                        <!-- Notes will be added here dynamically -->
+                    </div>
+                    <button class="add-note-btn" data-column="inprogress" aria-label="Add new note">
+                        <span class="plus-icon">+</span>
+                        <span>Add Note</span>
+                    </button>
+                </div>
+
+                <!-- Done Column -->
+                <div class="kanban-column" data-column="done">
+                    <div class="column-header">
+                        <h2 class="column-title">Done</h2>
+                        <span class="task-count" id="doneCount">0</span>
+                        <button class="column-menu" aria-label="Column options">⋯</button>
+                    </div>
+                    <div class="notes-container" id="doneNotes" data-column="done">
+                        <!-- Notes will be added here dynamically -->
+                    </div>
+                    <button class="add-note-btn" data-column="done" aria-label="Add new note">
+                        <span class="plus-icon">+</span>
+                        <span>Add Note</span>
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Add/Edit Note Modal -->
+    <div class="modal-overlay" id="noteModal">
+        <div class="modal-content sticky-note-modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">New Note</h2>
+                <button class="modal-close" id="modalClose" aria-label="Close modal">×</button>
+            </div>
+            <form class="note-form" id="noteForm">
+                <input type="hidden" id="noteId">
+                <input type="hidden" id="noteColumn">
+
+                <div class="form-group">
+                    <label for="noteTitle" class="form-label">Title</label>
+                    <input type="text" class="form-input note-title-input" id="noteTitle"
+                        placeholder="What needs to be done?" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="noteDescription" class="form-label">Description</label>
+                    <textarea class="form-input note-desc-input" id="noteDescription" placeholder="Add some details..."
+                        rows="3"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="noteDate" class="form-label">Due Date</label>
+                        <input type="date" class="form-input" id="noteDate">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Color</label>
+                        <div class="modal-colors" id="modalColors">
+                            <button type="button" class="color-btn active" data-color="yellow"
+                                style="background: var(--note-yellow)"></button>
+                            <button type="button" class="color-btn" data-color="pink"
+                                style="background: var(--note-pink)"></button>
+                            <button type="button" class="color-btn" data-color="mint"
+                                style="background: var(--note-mint)"></button>
+                            <button type="button" class="color-btn" data-color="lavender"
+                                style="background: var(--note-lavender)"></button>
+                            <button type="button" class="color-btn" data-color="coral"
+                                style="background: var(--note-coral)"></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="noteTags" class="form-label">Tags (comma separated)</label>
+                    <input type="text" class="form-input" id="noteTags" placeholder="work, urgent, personal...">
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelNote">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveNote">Save Note</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sticky Note Template (hidden) -->
+    <template id="stickyNoteTemplate">
+        <article class="sticky-note" draggable="true">
+            <div class="note-pin"></div>
+            <div class="note-content">
+                <div class="note-header">
+                    <label class="checkbox-container">
+                        <input type="checkbox" class="note-checkbox">
+                        <span class="checkmark"></span>
+                    </label>
+                    <h3 class="note-title"></h3>
+                </div>
+                <p class="note-description"></p>
+                <div class="note-footer">
+                    <span class="note-date"></span>
+                    <div class="note-actions">
+                        <button class="note-action-btn edit-btn" aria-label="Edit note">✏️</button>
+                        <button class="note-action-btn delete-btn" aria-label="Delete note">🗑️</button>
+                    </div>
+                </div>
+            </div>
+            <div class="note-tags"></div>
+            </div>
+        </article>
+    </template>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-content settings-modal">
+            <div class="modal-header">
+                <h2 class="modal-title">⚙️ Settings</h2>
+                <button class="modal-close" id="settingsClose" aria-label="Close settings">×</button>
+            </div>
+            <div class="settings-content">
+                <div class="setting-group">
+                    <h3 class="setting-title">Data Management</h3>
+                    <button class="btn btn-secondary" id="exportData">📤 Export Notes</button>
+                    <button class="btn btn-secondary" id="importData">📥 Import Notes</button>
+                    <input type="file" id="importFile" accept=".json" style="display: none;">
+                </div>
+                <div class="setting-group">
+                    <h3 class="setting-title">Danger Zone</h3>
+                    <button class="btn btn-danger" id="clearAllData">🗑️ Clear All Notes</button>
+                </div>
+                <div class="setting-group">
+                    <h3 class="setting-title">About</h3>
+                    <p class="setting-info">GlamStickyNote v1.0</p>
+                    <p class="setting-info">Your digital sticky notes for daily task management.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Keyboard Shortcuts Modal -->
+    <div class="modal-overlay" id="shortcutsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">⌨️ Keyboard Shortcuts</h2>
+                <button class="modal-close" id="shortcutsClose" aria-label="Close">×</button>
+            </div>
+            <div class="shortcuts-list">
+                <div class="shortcut-item">
+                    <span class="shortcut-desc">New note</span>
+                    <div class="shortcut-keys"><span class="key">Ctrl</span><span class="key">N</span></div>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-desc">Quick add (from anywhere)</span>
+                    <div class="shortcut-keys"><span class="key">/</span></div>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-desc">Show all notes</span>
+                    <div class="shortcut-keys"><span class="key">A</span></div>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-desc">Show today's notes</span>
+                    <div class="shortcut-keys"><span class="key">T</span></div>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-desc">Show upcoming notes</span>
+                    <div class="shortcut-keys"><span class="key">U</span></div>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-desc">Close modal / Clear filter</span>
+                    <div class="shortcut-keys"><span class="key">Esc</span></div>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-desc">Show this help</span>
+                    <div class="shortcut-keys"><span class="key">?</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+
+</html>
