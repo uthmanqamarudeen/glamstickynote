@@ -12,7 +12,8 @@ const AppState = {
     selectedDate: null,
     editingNoteId: null,
     currentFilter: 'today', // 'all', 'today', 'upcoming', 'date', 'tag'
-    selectedTag: null
+    selectedTag: null,
+    sortBy: 'date-desc'
 };
 
 // ========================================
@@ -87,8 +88,9 @@ function initDOM() {
         // Toast
         toastContainer: document.getElementById('toastContainer'),
 
-        // Search
+        // Search & Sort
         searchInput: document.getElementById('searchInput'),
+        sortSelect: document.getElementById('sortSelect'),
 
         // Template
         stickyNoteTemplate: document.getElementById('stickyNoteTemplate')
@@ -516,7 +518,27 @@ function renderNotes(searchQuery = '') {
     DOM.doneNotes.innerHTML = '';
 
     // Get filtered notes
-    const filteredNotes = getFilteredNotes(searchQuery);
+    let filteredNotes = getFilteredNotes(searchQuery);
+
+    // Sort notes
+    filteredNotes.sort((a, b) => {
+        switch (AppState.sortBy) {
+            case 'date-desc':
+                return (b.date || '').localeCompare(a.date || '');
+            case 'date-asc':
+                return (a.date || '').localeCompare(b.date || '');
+            case 'priority-desc':
+                const pMap = { 'high': 3, 'medium': 2, 'low': 1, 'none': 0 };
+                const pA = pMap[a.priority || 'medium'] || 0;
+                const pB = pMap[b.priority || 'medium'] || 0;
+                if (pB !== pA) return pB - pA;
+                return (b.date || '').localeCompare(a.date || ''); // Fallback to date
+            case 'title-asc':
+                return a.title.localeCompare(b.title);
+            default:
+                return 0;
+        }
+    });
 
     // Check if empty
     if (filteredNotes.length === 0) {
@@ -999,6 +1021,12 @@ function initEventListeners() {
     // Search
     DOM.searchInput.addEventListener('input', (e) => {
         renderNotes(e.target.value);
+    });
+
+    // Sort
+    DOM.sortSelect.addEventListener('change', (e) => {
+        AppState.sortBy = e.target.value;
+        renderNotes(DOM.searchInput.value);
     });
 
     // Quick Add

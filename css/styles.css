@@ -392,6 +392,38 @@ body {
     gap: var(--space-lg);
 }
 
+/* Sorting */
+.sort-container {
+    margin-right: var(--space-xs);
+}
+
+.sort-select {
+    padding: var(--space-xs) var(--space-md);
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    cursor: pointer;
+    outline: none;
+    transition: all var(--transition-fast);
+    height: 38px;
+    /* Match typical input height */
+}
+
+.sort-select:hover,
+.sort-select:focus {
+    color: var(--text-primary);
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.sort-select option {
+    background: #1e293b;
+    /* Fallback dark */
+    color: white;
+}
+
 .search-container {
     position: relative;
 }
