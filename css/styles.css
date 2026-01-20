@@ -76,6 +76,13 @@
     box-sizing: border-box;
 }
 
+input,
+select,
+textarea,
+button {
+    max-width: 100%;
+}
+
 html {
     font-size: 16px;
     scroll-behavior: smooth;
@@ -1541,11 +1548,15 @@ body {
     .kanban-board {
         padding: var(--space-sm);
         gap: var(--space-sm);
+        grid-template-columns: minmax(0, 1fr);
+        /* Prevents grid blowout */
     }
 
     .kanban-column {
         padding: var(--space-md);
         min-height: 200px;
+        min-width: 0;
+        /* Constraints flex items */
     }
 
     .column-header {
