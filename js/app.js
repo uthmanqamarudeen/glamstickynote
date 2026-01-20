@@ -540,15 +540,18 @@ function renderNotes(searchQuery = '') {
         }
     });
 
-    // Check if empty
+    // Check if empty global (e.g. search found nothing)
     if (filteredNotes.length === 0) {
         const emptyMsg = document.createElement('div');
         emptyMsg.className = 'empty-state';
         emptyMsg.innerHTML = `
-            <div class="empty-state-icon">📝</div>
-            <p class="empty-state-text">No notes found</p>
+            <div class="empty-state-icon">🔍</div>
+            <p class="empty-state-text">${searchQuery ? `No matches for "${searchQuery}"` : 'No notes found'}</p>
         `;
+        // Append to Todo column as fallback, or maybe we should hide columns? 
+        // For simplicity, just showing it in Todo is fine, or all of them.
         DOM.todoNotes.appendChild(emptyMsg);
+        return;
     }
 
     // Render notes
@@ -559,14 +562,55 @@ function renderNotes(searchQuery = '') {
         }
     });
 
-    // Update counts (for filtered view)
-    updateCounts(filteredNotes);
+    // Check individual columns
+    if (DOM.todoNotes.children.length === 0) {
+        DOM.todoNotes.appendChild(createEmptyState('todo'));
+    }
+    if (DOM.inprogressNotes.children.length === 0) {
+        DOM.inprogressNotes.appendChild(createEmptyState('doing'));
+    }
+    if (DOM.doneNotes.children.length === 0) {
+        DOM.doneNotes.appendChild(createEmptyState('done'));
+    }
+}
 
-    // Update tags panel
-    renderTagsPanel();
+function createEmptyState(type) {
+    const el = document.createElement('div');
+    el.className = 'empty-state';
 
-    // Update calendar highlights
-    renderCalendar();
+    let icon = '📝';
+    let text = 'No notes';
+
+    switch (type) {
+        case 'todo':
+            icon = '🎉';
+            text = 'All caught up!';
+            break;
+        case 'doing':
+            icon = '⏳';
+            text = 'Nothing in progress';
+            break;
+        case 'done':
+            icon = '✨';
+            text = 'No completed tasks yet';
+            break;
+    }
+
+    el.innerHTML = `
+        <div class="empty-state-icon">${icon}</div>
+        <p class="empty-state-text">${text}</p>
+    `;
+    return el;
+}
+
+// Update counts (for filtered view)
+updateCounts(filteredNotes);
+
+// Update tags panel
+renderTagsPanel();
+
+// Update calendar highlights
+renderCalendar();
 }
 
 function updateCounts(notesToCount = null) {
