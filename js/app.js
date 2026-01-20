@@ -437,6 +437,17 @@ function createNoteElement(note) {
 
     noteEl.querySelector('.note-title').textContent = note.title;
     noteEl.querySelector('.note-description').textContent = note.description || '';
+
+    // Render Priority
+    if (note.priority && note.priority !== 'none') {
+        const dateEl = noteEl.querySelector('.note-date');
+        const badge = document.createElement('span');
+        badge.className = `note-priority priority-${note.priority}`;
+        badge.textContent = note.priority;
+        badge.style.marginRight = '8px';
+        dateEl.parentNode.insertBefore(badge, dateEl);
+    }
+
     noteEl.querySelector('.note-date').textContent = formatDate(note.date);
 
     // Render tags
@@ -753,6 +764,10 @@ function openModal(column = 'todo') {
         btn.classList.toggle('active', btn.dataset.color === AppState.selectedColor);
     });
 
+    // Reset priority (default medium)
+    const priorityRadios = DOM.noteForm.querySelectorAll('input[name="priority"]');
+    priorityRadios.forEach(radio => radio.checked = (radio.value === 'medium'));
+
     DOM.noteModal.classList.add('active');
     DOM.noteTitle.focus();
 }
@@ -774,6 +789,10 @@ function openEditModal(noteId) {
     DOM.modalColors.querySelectorAll('.color-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.color === note.color);
     });
+
+    // Set priority
+    const priorityRadios = DOM.noteForm.querySelectorAll('input[name="priority"]');
+    priorityRadios.forEach(radio => radio.checked = (radio.value === (note.priority || 'medium')));
 
     DOM.noteModal.classList.add('active');
     DOM.noteTitle.focus();
@@ -948,11 +967,14 @@ function initEventListeners() {
         e.preventDefault();
 
         const activeColor = DOM.modalColors.querySelector('.color-btn.active');
+        const priorityInput = DOM.noteForm.querySelector('input[name="priority"]:checked');
+
         const noteData = {
             title: DOM.noteTitle.value.trim(),
             description: DOM.noteDescription.value.trim(),
             date: DOM.noteDate.value,
             color: activeColor ? activeColor.dataset.color : 'yellow',
+            priority: priorityInput ? priorityInput.value : 'medium',
             column: DOM.noteColumn.value,
             tags: parseTags(DOM.noteTags.value)
         };
