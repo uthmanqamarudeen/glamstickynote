@@ -1517,6 +1517,8 @@ body {
     .sidebar {
         width: 100%;
         padding: var(--space-md);
+        overflow-y: auto;
+        max-height: 100vh;
     }
 
     .sidebar-close {

@@ -355,14 +355,16 @@ function renderCalendar() {
         const dateStr = formatDateISO(new Date(year, month, i));
 
         // Check if today
-        if (year === today.getFullYear() &&
+        const isToday = year === today.getFullYear() &&
             month === today.getMonth() &&
-            i === today.getDate()) {
+            i === today.getDate();
+
+        if (isToday) {
             day.classList.add('today');
         }
 
-        // Check if has notes
-        if (noteDates.has(dateStr)) {
+        // Check if has notes (don't override today's white text)
+        if (noteDates.has(dateStr) && !isToday) {
             day.style.fontWeight = '700';
             day.style.color = 'var(--accent-primary)';
         }
@@ -1192,8 +1194,11 @@ function init() {
     // Detect iOS
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
-    // Show button immediately on iOS
-    if (isIOS) {
+    // Detect any mobile device
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    // Show button immediately on mobile (with platform-specific instructions)
+    if (isMobile) {
         DOM.installApp.style.display = 'flex';
     }
 
