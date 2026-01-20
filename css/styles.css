@@ -820,6 +820,8 @@ body {
     transform: scale(0.9) translateY(20px);
     transition: all var(--transition-normal);
     border: 1px solid rgba(255, 255, 255, 0.1);
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .modal-overlay.active .modal-content {
@@ -1046,6 +1048,7 @@ body {
     display: flex;
     gap: var(--space-sm);
     margin-top: var(--space-xs);
+    flex-wrap: wrap;
 }
 
 .priority-check {
@@ -1522,7 +1525,7 @@ body {
         padding: var(--space-md);
         margin: var(--space-sm);
         width: calc(100% - var(--space-md));
-        max-height: 90vh;
+        max-height: 80vh;
         overflow-y: auto;
     }
 
@@ -1537,6 +1540,21 @@ body {
     .form-row {
         grid-template-columns: 1fr;
         gap: var(--space-md);
+    }
+
+    .priority-selector {
+        flex-wrap: wrap;
+    }
+
+    .priority-option {
+        flex: 1;
+        min-width: 80px;
+    }
+
+    .priority-label {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
     }
 
     .form-input {
