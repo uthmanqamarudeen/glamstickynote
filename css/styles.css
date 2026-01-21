@@ -1958,6 +1958,47 @@ body {
     }
 }
 
+/* ========================================
+   Quick Edit Inline Styles
+   ======================================== */
+.note-title.editable,
+.note-description.editable {
+    cursor: text;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.note-title.editable:hover,
+.note-description.editable:hover {
+    background: rgba(129, 140, 248, 0.1);
+}
+
+.note-title-input,
+.note-description-input {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+    background: var(--bg-secondary);
+    border: 2px solid var(--accent-primary);
+    border-radius: 4px;
+    padding: 4px 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.note-title-input {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.note-description-input {
+    font-size: 0.95rem;
+    min-height: 60px;
+    resize: vertical;
+}
+
 /* Responsive */
 @media (max-width: 900px) {
     .bulk-action-bar {

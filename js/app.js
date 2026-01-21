@@ -566,6 +566,78 @@ function updateBulkActionBar() {
     }
 }
 
+// ========================================
+// Quick Edit Inline Functions
+// ========================================
+function enableQuickEdit(noteEl, noteId) {
+    const note = AppState.notes.find(n => n.id === noteId);
+    if (!note || AppState.selectMode) return;
+
+    const titleEl = noteEl.querySelector('.note-title');
+    const descEl = noteEl.querySelector('.note-description');
+
+    // Create editable inputs
+    const titleInput = document.createElement('input');
+    titleInput.type = 'text';
+    titleInput.className = 'note-title-input';
+    titleInput.value = note.title;
+
+    const descInput = document.createElement('textarea');
+    descInput.className = 'note-description-input';
+    descInput.value = note.description || '';
+
+    // Replace elements
+    titleEl.replaceWith(titleInput);
+    descEl.replaceWith(descInput);
+
+    titleInput.focus();
+    titleInput.select();
+
+    function saveEdit() {
+        const newTitle = titleInput.value.trim();
+        const newDesc = descInput.value.trim();
+
+        if (newTitle) {
+            updateNote(noteId, {
+                title: newTitle,
+                description: newDesc
+            });
+        } else {
+            // Cancel if title is empty
+            renderNotes();
+        }
+    }
+
+    function cancelEdit() {
+        renderNotes();
+    }
+
+    // Save on blur
+    titleInput.addEventListener('blur', saveEdit);
+    descInput.addEventListener('blur', saveEdit);
+
+    // Save on Enter (title only), Escape to cancel
+    titleInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            descInput.focus();
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            cancelEdit();
+        }
+    });
+
+    descInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            cancelEdit();
+        } else if (e.key === 'Enter' && e.ctrlKey) {
+            e.preventDefault();
+            saveEdit();
+        }
+    });
+}
+
 function getFilteredNotes(searchQuery = '') {
     let filtered = [...AppState.notes];
 
@@ -796,7 +868,6 @@ function createNoteElement(note) {
             e.stopPropagation();
             toggleNoteSelection(note.id);
             updateBulkActionBar();
-            renderNotes();
         });
         noteEl.appendChild(selectCheckbox);
         
@@ -837,6 +908,20 @@ function createNoteElement(note) {
     noteEl.querySelector('.delete-btn').addEventListener('click', (e) => {
         e.stopPropagation();
         deleteNote(note.id);
+    });
+
+    // Quick Edit - double-click to edit inline
+    const titleEl = noteEl.querySelector('.note-title');
+    const descEl = noteEl.querySelector('.note-description');
+    
+    titleEl.addEventListener('dblclick', (e) => {
+        e.stopPropagation();
+        enableQuickEdit(noteEl, note.id);
+    });
+    
+    descEl.addEventListener('dblclick', (e) => {
+        e.stopPropagation();
+        enableQuickEdit(noteEl, note.id);
     });
 
     // Drag events
@@ -1287,6 +1372,7 @@ function initEventListeners() {
 
     // Bulk Operations
     const selectModeBtn = document.getElementById('selectModeBtn');
+    const mobileBulkFab = document.getElementById('mobileBulkFab');
     const selectAllBtn = document.getElementById('selectAllBtn');
     const bulkColorBtn = document.getElementById('bulkColorBtn');
     const bulkMoveBtn = document.getElementById('bulkMoveBtn');
@@ -1300,74 +1386,32 @@ function initEventListeners() {
         });
     }
 
+    if (mobileBulkFab) {
+        mobileBulkFab.addEventListener('click', () => {
+            toggleSelectMode();
+            mobileBulkFab.classList.toggle('active', AppState.selectMode);
+        });
+    }
+
     if (selectAllBtn) {
         selectAllBtn.addEventListener('click', selectAllFiltered);
     }
 
     if (bulkColorBtn) {
         bulkColorBtn.addEventListener('click', () => {
-            const colorDiv = document.createElement('div');
-            colorDiv.className = 'bulk-color-picker';
-            colorDiv.style.cssText = 'position: fixed; top: 100px; right: 20px; background: var(--bg-secondary); border: 1px solid var(--bg-tertiary); border-radius: var(--radius-md); padding: var(--space-md); display: flex; gap: var(--space-sm); z-index: 1000;';
-            
-            const colors = ['yellow', 'pink', 'mint', 'lavender', 'coral'];
-            colors.forEach(color => {
-                const btn = document.createElement('button');
-                btn.className = 'color-btn';
-                btn.dataset.color = color;
-                btn.style.cssText = `width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--bg-tertiary); cursor: pointer; background: var(--note-${color}); transition: transform 0.2s;`;
-                btn.addEventListener('mouseover', (e) => e.target.style.transform = 'scale(1.1)');
-                btn.addEventListener('mouseout', (e) => e.target.style.transform = 'scale(1)');
-                btn.addEventListener('click', () => {
-                    bulkColorNotes(color);
-                    colorDiv.remove();
-                });
-                colorDiv.appendChild(btn);
-            });
-            
-            document.body.appendChild(colorDiv);
-            setTimeout(() => {
-                document.addEventListener('click', (e) => {
-                    if (!colorDiv.contains(e.target) && !bulkColorBtn.contains(e.target)) {
-                        colorDiv.remove();
-                    }
-                }, { once: true });
-            }, 0);
+            const color = prompt('Enter color (yellow, pink, mint, lavender, coral):');
+            if (color && ['yellow', 'pink', 'mint', 'lavender', 'coral'].includes(color)) {
+                bulkColorNotes(color);
+            }
         });
     }
 
     if (bulkMoveBtn) {
         bulkMoveBtn.addEventListener('click', () => {
-            const moveDiv = document.createElement('div');
-            moveDiv.className = 'bulk-move-picker';
-            moveDiv.style.cssText = 'position: fixed; top: 100px; right: 20px; background: var(--bg-secondary); border: 1px solid var(--bg-tertiary); border-radius: var(--radius-md); padding: var(--space-md); display: flex; flex-direction: column; gap: var(--space-sm); z-index: 1000;';
-            
-            const columns = [
-                { id: 'todo', label: '📝 To Do' },
-                { id: 'inprogress', label: '⏳ In Progress' },
-                { id: 'done', label: '✅ Done' }
-            ];
-            columns.forEach(col => {
-                const btn = document.createElement('button');
-                btn.style.cssText = 'padding: var(--space-sm) var(--space-md); background: var(--bg-tertiary); border: 1px solid var(--bg-glass); color: var(--text-primary); border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s;';
-                btn.textContent = col.label;
-                btn.addEventListener('mouseover', (e) => e.target.style.background = 'var(--accent-primary)');
-                btn.addEventListener('mouseout', (e) => e.target.style.background = 'var(--bg-tertiary)');
-                btn.addEventListener('click', () => {
-                    bulkMoveNotes(col.id);
-                    moveDiv.remove();
-                });
-                moveDiv.appendChild(btn);
-            });
-            
-            document.body.appendChild(moveDiv);
-            setTimeout(() => {
-                document.addEventListener('click', (e) => {
-                    if (!moveDiv.contains(e.target) && !bulkMoveBtn.contains(e.target)) {
-                        moveDiv.remove();
-                    }
-                }, { once: true });
-            }, 0);
+            const column = prompt('Enter column (todo, inprogress, done):');
+            if (column && ['todo', 'inprogress', 'done'].includes(column)) {
+                bulkMoveNotes(column);
+            }
         });
     }
 
@@ -1380,6 +1424,7 @@ function initEventListeners() {
             AppState.selectMode = false;
             AppState.selectedNoteIds.clear();
             if (selectModeBtn) selectModeBtn.classList.remove('active');
+            if (mobileBulkFab) mobileBulkFab.classList.remove('active');
             renderNotes();
             updateBulkActionBar();
         });
