@@ -116,6 +116,9 @@
                     <h1 class="app-title">
                         <span class="title-glam">Glam</span><span class="title-sticky">StickyNote</span>
                     </h1>
+                </div>
+                <div class="header-center">
+                    <!-- Active Filter Indicator -->
                     <div class="filter-indicator" id="filterIndicator" style="display: none;">
                         <span class="filter-text" id="filterText">Today</span>
                         <button class="clear-filter" id="clearFilter" aria-label="Clear filter">×</button>
@@ -140,6 +143,27 @@
                     </div>
                 </div>
             </header>
+
+            <!-- Smart Filters Bar -->
+            <div class="smart-filters-bar" id="smartFiltersBar">
+                <div class="smart-filters" id="smartFilters">
+                    <button class="filter-pill" id="filterOverdue" data-filter="overdue" aria-label="Show overdue notes">
+                        <span class="filter-emoji">🔴</span>
+                        <span class="filter-label">Overdue</span>
+                        <span class="filter-count">0</span>
+                    </button>
+                    <button class="filter-pill" id="filterHighPriority" data-filter="high-priority" aria-label="Show high priority notes">
+                        <span class="filter-emoji">⭐</span>
+                        <span class="filter-label">High Priority</span>
+                        <span class="filter-count">0</span>
+                    </button>
+                    <button class="filter-pill" id="filterThisWeek" data-filter="this-week" aria-label="Show notes due this week">
+                        <span class="filter-emoji">📆</span>
+                        <span class="filter-label">This Week</span>
+                        <span class="filter-count">0</span>
+                    </button>
+                </div>
+            </div>
 
             <!-- Quick Add -->
             <div class="quick-add-container">

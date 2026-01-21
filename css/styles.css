@@ -358,6 +358,7 @@ body {
     display: flex;
     align-items: center;
     gap: var(--space-lg);
+    flex-shrink: 0;
 }
 
 .menu-toggle {
@@ -399,6 +400,7 @@ body {
     display: flex;
     align-items: center;
     gap: var(--space-lg);
+    flex-shrink: 0;
 }
 
 /* Sorting */
@@ -1489,6 +1491,27 @@ body {
         display: flex;
     }
 
+    /* Adjust smart filters for tablet */
+    .smart-filters {
+        display: flex;
+        gap: var(--space-xs);
+    }
+
+    .filter-pill {
+        padding: var(--space-xs) var(--space-sm);
+        font-size: 0.8rem;
+    }
+
+    .filter-label {
+        display: none;
+    }
+
+    .filter-count {
+        min-width: 18px;
+        height: 18px;
+        font-size: 0.7rem;
+    }
+
     .kanban-board {
         grid-template-columns: 1fr;
         padding: var(--space-md);
@@ -1687,6 +1710,118 @@ body {
     overflow: hidden;
     clip: rect(0, 0, 0, 0);
     border: 0;
+}
+
+/* ========================================
+   Smart Filters Bar Styling
+   ======================================== */
+.smart-filters-bar {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: var(--space-md) var(--space-xl);
+    display: flex;
+    justify-content: center;
+}
+
+.smart-filters {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+
+.filter-pill {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+}
+
+.filter-pill:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-color: var(--accent-primary);
+}
+
+.filter-pill.has-items {
+    background: rgba(129, 140, 248, 0.15);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+.filter-pill.has-items:hover {
+    background: rgba(129, 140, 248, 0.25);
+}
+
+.filter-emoji {
+    font-size: 1rem;
+}
+
+.filter-label {
+    font-weight: 600;
+}
+
+.filter-count {
+    display: inline-block;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 var(--space-xs);
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.filter-pill.has-items .filter-count {
+    background: var(--accent-primary);
+    color: white;
+}
+
+/* Mobile responsive */
+@media (max-width: 900px) {
+    .smart-filters-bar {
+        padding: var(--space-sm) var(--space-md);
+    }
+
+    .smart-filters {
+        gap: var(--space-xs);
+    }
+
+    .filter-pill {
+        padding: var(--space-xs) var(--space-sm);
+        font-size: 0.8rem;
+    }
+
+    .filter-label {
+        display: none; /* Hide labels on tablet to save space */
+    }
+
+    .filter-count {
+        min-width: 18px;
+        height: 18px;
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .smart-filters-bar {
+        display: none; /* Hide filters bar on mobile */
+    }
 }
 
 /* Scrollbar Styling */

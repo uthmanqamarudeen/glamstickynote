@@ -11,7 +11,7 @@ const AppState = {
     currentDate: new Date(),
     selectedDate: null,
     editingNoteId: null,
-    currentFilter: 'today', // 'all', 'today', 'upcoming', 'date', 'tag'
+    currentFilter: 'today', // 'all', 'today', 'upcoming', 'date', 'tag', 'overdue', 'high-priority', 'this-week'
     selectedTag: null,
     sortBy: 'date-desc'
 };
@@ -47,6 +47,10 @@ function initDOM() {
         filterIndicator: document.getElementById('filterIndicator'),
         filterText: document.getElementById('filterText'),
         clearFilter: document.getElementById('clearFilter'),
+        smartFilters: document.getElementById('smartFilters'),
+        filterOverdue: document.getElementById('filterOverdue'),
+        filterHighPriority: document.getElementById('filterHighPriority'),
+        filterThisWeek: document.getElementById('filterThisWeek'),
 
         // Kanban
         todoNotes: document.getElementById('todoNotes'),
@@ -169,6 +173,56 @@ function parseTags(tagString) {
 }
 
 // ========================================
+// Smart Filter Helper Functions
+// ========================================
+function isOverdue(note) {
+    if (!note.date || note.completed) return false;
+    const today = formatDateISO(new Date());
+    return note.date < today;
+}
+
+function isHighPriority(note) {
+    return note.priority === 'high';
+}
+
+function isThisWeek(note) {
+    if (!note.date) return false;
+    const today = new Date();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay()); // Start of week (Sunday)
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6); // End of week (Saturday)
+    
+    const noteDate = new Date(note.date);
+    return noteDate >= startOfWeek && noteDate <= endOfWeek;
+}
+
+function countSmartFilters() {
+    const overdueCount = AppState.notes.filter(isOverdue).length;
+    const highPriorityCount = AppState.notes.filter(isHighPriority).length;
+    const thisWeekCount = AppState.notes.filter(isThisWeek).length;
+    
+    return { overdueCount, highPriorityCount, thisWeekCount };
+}
+
+function updateSmartFilterCounts() {
+    const { overdueCount, highPriorityCount, thisWeekCount } = countSmartFilters();
+    
+    const filterPills = [
+        { elem: DOM.filterOverdue, count: overdueCount },
+        { elem: DOM.filterHighPriority, count: highPriorityCount },
+        { elem: DOM.filterThisWeek, count: thisWeekCount }
+    ];
+    
+    filterPills.forEach(({ elem, count }) => {
+        if (elem) {
+            elem.querySelector('.filter-count').textContent = count;
+            elem.classList.toggle('has-items', count > 0);
+        }
+    });
+}
+
+// ========================================
 // Local Storage
 // ========================================
 function saveToStorage() {
@@ -194,6 +248,7 @@ function loadFromStorage() {
                 color: 'yellow',
                 column: 'todo',
                 completed: false,
+                priority: 'medium',
                 tags: ['welcome', 'tutorial']
             },
             {
@@ -204,6 +259,7 @@ function loadFromStorage() {
                 color: 'mint',
                 column: 'todo',
                 completed: false,
+                priority: 'high',
                 tags: ['tutorial']
             },
             {
@@ -214,6 +270,7 @@ function loadFromStorage() {
                 color: 'pink',
                 column: 'inprogress',
                 completed: false,
+                priority: 'medium',
                 tags: ['tutorial', 'design']
             },
             {
@@ -224,6 +281,7 @@ function loadFromStorage() {
                 color: 'lavender',
                 column: 'todo',
                 completed: false,
+                priority: 'low',
                 tags: ['planning']
             }
         ];
@@ -263,6 +321,15 @@ function setFilter(filterType, value = null) {
         case 'date':
             filterLabel = `📅 ${formatDate(value)}`;
             break;
+        case 'overdue':
+            filterLabel = '🔴 Overdue';
+            break;
+        case 'high-priority':
+            filterLabel = '⭐ High Priority';
+            break;
+        case 'this-week':
+            filterLabel = '📆 This Week';
+            break;
     }
 
     // Show/hide filter indicator
@@ -297,6 +364,15 @@ function getFilteredNotes(searchQuery = '') {
             filtered = filtered.filter(note =>
                 note.tags && note.tags.some(t => t.toLowerCase() === AppState.selectedTag.toLowerCase())
             );
+            break;
+        case 'overdue':
+            filtered = filtered.filter(isOverdue);
+            break;
+        case 'high-priority':
+            filtered = filtered.filter(isHighPriority);
+            break;
+        case 'this-week':
+            filtered = filtered.filter(isThisWeek);
             break;
         // 'all' shows everything
     }
@@ -518,6 +594,9 @@ function renderNotes(searchQuery = '') {
     DOM.todoNotes.innerHTML = '';
     DOM.inprogressNotes.innerHTML = '';
     DOM.doneNotes.innerHTML = '';
+
+    // Update smart filter counts
+    updateSmartFilterCounts();
 
     // Get filtered notes
     let filteredNotes = getFilteredNotes(searchQuery);
@@ -975,6 +1054,11 @@ function initEventListeners() {
         }
     });
     DOM.navSettings.addEventListener('click', openSettings);
+
+    // Smart Filters
+    DOM.filterOverdue.addEventListener('click', () => setFilter('overdue'));
+    DOM.filterHighPriority.addEventListener('click', () => setFilter('high-priority'));
+    DOM.filterThisWeek.addEventListener('click', () => setFilter('this-week'));
 
     // Clear filter
     DOM.clearFilter.addEventListener('click', () => setFilter('all'));
