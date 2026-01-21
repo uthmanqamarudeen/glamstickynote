@@ -292,6 +292,16 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="noteRecurrence" class="form-label">Repeat</label>
+                    <select class="form-input" id="noteRecurrence" aria-label="Note recurrence pattern">
+                        <option value="none">Never</option>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
                     <label for="noteTags" class="form-label">Tags (comma separated)</label>
                     <input type="text" class="form-input" id="noteTags" placeholder="work, urgent, personal...">
                 </div>
@@ -318,7 +328,10 @@
                 </div>
                 <p class="note-description"></p>
                 <div class="note-footer">
-                    <span class="note-date"></span>
+                    <div class="note-footer-left">
+                        <span class="note-date"></span>
+                        <span class="note-recurrence" style="display: none;"></span>
+                    </div>
                     <div class="note-actions">
                         <button class="note-action-btn edit-btn" aria-label="Edit note">✏️</button>
                         <button class="note-action-btn delete-btn" aria-label="Delete note">🗑️</button>

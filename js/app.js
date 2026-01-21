@@ -72,6 +72,7 @@ function initDOM() {
         noteDescription: document.getElementById('noteDescription'),
         noteDate: document.getElementById('noteDate'),
         noteTags: document.getElementById('noteTags'),
+        noteRecurrence: document.getElementById('noteRecurrence'),
         modalColors: document.getElementById('modalColors'),
 
         // Settings Modal
@@ -223,6 +224,51 @@ function updateSmartFilterCounts() {
 }
 
 // ========================================
+// Recurring Tasks Helper Functions
+// ========================================
+function getNextOccurrenceDate(currentDate, recurrence) {
+    const date = new Date(currentDate);
+    switch (recurrence) {
+        case 'daily':
+            date.setDate(date.getDate() + 1);
+            break;
+        case 'weekly':
+            date.setDate(date.getDate() + 7);
+            break;
+        case 'monthly':
+            date.setMonth(date.getMonth() + 1);
+            break;
+        default:
+            return null;
+    }
+    return formatDateISO(date);
+}
+
+function createNextOccurrence(note) {
+    if (!note.recurrence || note.recurrence === 'none') {
+        return null;
+    }
+
+    const nextDate = getNextOccurrenceDate(note.date, note.recurrence);
+    if (!nextDate) return null;
+
+    const newNote = {
+        id: generateId(),
+        title: note.title,
+        description: note.description,
+        date: nextDate,
+        color: note.color,
+        column: 'todo',
+        completed: false,
+        priority: note.priority || 'medium',
+        tags: note.tags || [],
+        recurrence: note.recurrence
+    };
+
+    return newNote;
+}
+
+// ========================================
 // Local Storage
 // ========================================
 function saveToStorage() {
@@ -249,7 +295,8 @@ function loadFromStorage() {
                 column: 'todo',
                 completed: false,
                 priority: 'medium',
-                tags: ['welcome', 'tutorial']
+                tags: ['welcome', 'tutorial'],
+                recurrence: 'none'
             },
             {
                 id: generateId(),
@@ -260,7 +307,8 @@ function loadFromStorage() {
                 column: 'todo',
                 completed: false,
                 priority: 'high',
-                tags: ['tutorial']
+                tags: ['tutorial'],
+                recurrence: 'none'
             },
             {
                 id: generateId(),
@@ -271,7 +319,8 @@ function loadFromStorage() {
                 column: 'inprogress',
                 completed: false,
                 priority: 'medium',
-                tags: ['tutorial', 'design']
+                tags: ['tutorial', 'design'],
+                recurrence: 'none'
             },
             {
                 id: generateId(),
@@ -282,7 +331,8 @@ function loadFromStorage() {
                 column: 'todo',
                 completed: false,
                 priority: 'low',
-                tags: ['planning']
+                tags: ['planning'],
+                recurrence: 'none'
             }
         ];
         saveToStorage();
@@ -530,6 +580,21 @@ function createNoteElement(note) {
 
     noteEl.querySelector('.note-date').textContent = formatDate(note.date);
 
+    // Render recurrence badge
+    const recurrenceEl = noteEl.querySelector('.note-recurrence');
+    if (note.recurrence && note.recurrence !== 'none') {
+        const recurrenceLabel = {
+            'daily': '🔄 Daily',
+            'weekly': '🔄 Weekly',
+            'monthly': '🔄 Monthly'
+        }[note.recurrence];
+        recurrenceEl.textContent = recurrenceLabel;
+        recurrenceEl.style.display = 'inline';
+        recurrenceEl.style.fontSize = '0.7rem';
+        recurrenceEl.style.marginLeft = '8px';
+        recurrenceEl.style.opacity = '0.8';
+    }
+
     // Render tags
     const tagsContainer = noteEl.querySelector('.note-tags');
     if (note.tags && note.tags.length > 0) {
@@ -717,7 +782,9 @@ function addNote(noteData) {
         color: noteData.color || AppState.selectedColor,
         column: noteData.column || 'todo',
         completed: false,
-        tags: noteData.tags || []
+        priority: noteData.priority || 'medium',
+        tags: noteData.tags || [],
+        recurrence: noteData.recurrence || 'none'
     };
 
     AppState.notes.push(note);
@@ -814,6 +881,15 @@ function toggleNoteComplete(id) {
         note.completed = !note.completed;
         if (note.completed && note.column !== 'done') {
             note.column = 'done';
+
+            // If recurring, create next occurrence
+            if (note.recurrence && note.recurrence !== 'none') {
+                const nextNote = createNextOccurrence(note);
+                if (nextNote) {
+                    AppState.notes.push(nextNote);
+                    showToast(`✅ Next occurrence created: ${formatDate(nextNote.date)}`, 'success');
+                }
+            }
         }
         saveToStorage();
         renderNotes();
@@ -931,6 +1007,7 @@ function openEditModal(noteId) {
     DOM.noteDescription.value = note.description;
     DOM.noteDate.value = note.date;
     DOM.noteTags.value = note.tags ? note.tags.join(', ') : '';
+    DOM.noteRecurrence.value = note.recurrence || 'none';
 
     // Set color selection
     DOM.modalColors.querySelectorAll('.color-btn').forEach(btn => {
@@ -1128,7 +1205,8 @@ function initEventListeners() {
             color: activeColor ? activeColor.dataset.color : 'yellow',
             priority: priorityInput ? priorityInput.value : 'medium',
             column: DOM.noteColumn.value,
-            tags: parseTags(DOM.noteTags.value)
+            tags: parseTags(DOM.noteTags.value),
+            recurrence: DOM.noteRecurrence.value || 'none'
         };
 
         if (AppState.editingNoteId) {
