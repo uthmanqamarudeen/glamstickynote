@@ -17,7 +17,10 @@ const AppState = {
     // History tracking
     history: [],
     historyIndex: -1,
-    maxHistorySize: 50
+    maxHistorySize: 50,
+    // Bulk operations
+    selectMode: false,
+    selectedNoteIds: new Set()
 };
 
 // ========================================
@@ -458,6 +461,111 @@ function setFilter(filterType, value = null) {
     renderNotes();
 }
 
+// ========================================
+// Bulk Operations Functions
+// ========================================
+function toggleSelectMode() {
+    AppState.selectMode = !AppState.selectMode;
+    AppState.selectedNoteIds.clear();
+    renderNotes();
+    updateBulkActionBar();
+}
+
+function toggleNoteSelection(id) {
+    if (AppState.selectedNoteIds.has(id)) {
+        AppState.selectedNoteIds.delete(id);
+    } else {
+        AppState.selectedNoteIds.add(id);
+    }
+    updateBulkActionBar();
+}
+
+function selectAllFiltered() {
+    const filtered = getFilteredNotes(DOM.searchInput.value);
+    AppState.selectedNoteIds.clear();
+    filtered.forEach(note => AppState.selectedNoteIds.add(note.id));
+    updateBulkActionBar();
+    renderNotes();
+}
+
+function clearSelection() {
+    AppState.selectedNoteIds.clear();
+    updateBulkActionBar();
+    renderNotes();
+}
+
+function bulkDeleteNotes() {
+    const count = AppState.selectedNoteIds.size;
+    if (count === 0) return;
+    
+    if (!confirm(`Delete ${count} note${count > 1 ? 's' : ''}?`)) return;
+
+    AppState.notes = AppState.notes.filter(n => !AppState.selectedNoteIds.has(n.id));
+    saveToStorage();
+    pushHistory('bulk-delete', `Deleted ${count} note${count > 1 ? 's' : ''}`);
+    showToast(`🗑️ Deleted ${count} note${count > 1 ? 's' : ''}`, 'success', null, 2000);
+    
+    AppState.selectedNoteIds.clear();
+    AppState.selectMode = false;
+    renderNotes();
+    updateBulkActionBar();
+}
+
+function bulkMoveNotes(newColumn) {
+    const count = AppState.selectedNoteIds.size;
+    if (count === 0) return;
+
+    AppState.notes.forEach(note => {
+        if (AppState.selectedNoteIds.has(note.id)) {
+            note.column = newColumn;
+            if (newColumn === 'done') {
+                note.completed = true;
+            } else if (note.completed && newColumn !== 'done') {
+                note.completed = false;
+            }
+        }
+    });
+
+    saveToStorage();
+    const columnNames = { 'todo': 'To Do', 'inprogress': 'In Progress', 'done': 'Done' };
+    pushHistory('bulk-move', `Moved ${count} note${count > 1 ? 's' : ''} to ${columnNames[newColumn]}`);
+    showToast(`➡️ Moved ${count} note${count > 1 ? 's' : ''} to ${columnNames[newColumn]}`, 'success', null, 2000);
+    
+    AppState.selectedNoteIds.clear();
+    renderNotes();
+    updateBulkActionBar();
+}
+
+function bulkColorNotes(color) {
+    const count = AppState.selectedNoteIds.size;
+    if (count === 0) return;
+
+    AppState.notes.forEach(note => {
+        if (AppState.selectedNoteIds.has(note.id)) {
+            note.color = color;
+        }
+    });
+
+    saveToStorage();
+    pushHistory('bulk-color', `Changed color of ${count} note${count > 1 ? 's' : ''}`);
+    showToast(`🎨 Changed color of ${count} note${count > 1 ? 's' : ''}`, 'success', null, 2000);
+    
+    renderNotes();
+    updateBulkActionBar();
+}
+
+function updateBulkActionBar() {
+    const bar = document.getElementById('bulkActionBar');
+    if (!bar) return;
+    
+    if (AppState.selectMode && AppState.selectedNoteIds.size > 0) {
+        bar.style.display = 'flex';
+        bar.querySelector('.selection-count').textContent = `${AppState.selectedNoteIds.size} selected`;
+    } else {
+        bar.style.display = 'none';
+    }
+}
+
 function getFilteredNotes(searchQuery = '') {
     let filtered = [...AppState.notes];
 
@@ -673,6 +781,28 @@ function createNoteElement(note) {
     checkbox.checked = note.completed;
     if (note.completed) {
         noteEl.classList.add('completed');
+    }
+
+    // Add select mode checkbox overlay
+    if (AppState.selectMode) {
+        const selectCheckbox = document.createElement('input');
+        selectCheckbox.type = 'checkbox';
+        selectCheckbox.className = 'note-select-checkbox';
+        selectCheckbox.checked = AppState.selectedNoteIds.has(note.id);
+        selectCheckbox.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+        selectCheckbox.addEventListener('change', (e) => {
+            e.stopPropagation();
+            toggleNoteSelection(note.id);
+            updateBulkActionBar();
+            renderNotes();
+        });
+        noteEl.appendChild(selectCheckbox);
+        
+        if (AppState.selectedNoteIds.has(note.id)) {
+            noteEl.classList.add('selected-for-bulk');
+        }
     }
 
     // Check if overdue
@@ -1154,6 +1284,106 @@ function initEventListeners() {
         DOM.sidebar.classList.toggle('open');
         document.body.style.overflow = DOM.sidebar.classList.contains('open') ? 'hidden' : '';
     });
+
+    // Bulk Operations
+    const selectModeBtn = document.getElementById('selectModeBtn');
+    const selectAllBtn = document.getElementById('selectAllBtn');
+    const bulkColorBtn = document.getElementById('bulkColorBtn');
+    const bulkMoveBtn = document.getElementById('bulkMoveBtn');
+    const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+    const cancelSelectBtn = document.getElementById('cancelSelectBtn');
+
+    if (selectModeBtn) {
+        selectModeBtn.addEventListener('click', () => {
+            toggleSelectMode();
+            selectModeBtn.classList.toggle('active', AppState.selectMode);
+        });
+    }
+
+    if (selectAllBtn) {
+        selectAllBtn.addEventListener('click', selectAllFiltered);
+    }
+
+    if (bulkColorBtn) {
+        bulkColorBtn.addEventListener('click', () => {
+            const colorDiv = document.createElement('div');
+            colorDiv.className = 'bulk-color-picker';
+            colorDiv.style.cssText = 'position: fixed; top: 100px; right: 20px; background: var(--bg-secondary); border: 1px solid var(--bg-tertiary); border-radius: var(--radius-md); padding: var(--space-md); display: flex; gap: var(--space-sm); z-index: 1000;';
+            
+            const colors = ['yellow', 'pink', 'mint', 'lavender', 'coral'];
+            colors.forEach(color => {
+                const btn = document.createElement('button');
+                btn.className = 'color-btn';
+                btn.dataset.color = color;
+                btn.style.cssText = `width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--bg-tertiary); cursor: pointer; background: var(--note-${color}); transition: transform 0.2s;`;
+                btn.addEventListener('mouseover', (e) => e.target.style.transform = 'scale(1.1)');
+                btn.addEventListener('mouseout', (e) => e.target.style.transform = 'scale(1)');
+                btn.addEventListener('click', () => {
+                    bulkColorNotes(color);
+                    colorDiv.remove();
+                });
+                colorDiv.appendChild(btn);
+            });
+            
+            document.body.appendChild(colorDiv);
+            setTimeout(() => {
+                document.addEventListener('click', (e) => {
+                    if (!colorDiv.contains(e.target) && !bulkColorBtn.contains(e.target)) {
+                        colorDiv.remove();
+                    }
+                }, { once: true });
+            }, 0);
+        });
+    }
+
+    if (bulkMoveBtn) {
+        bulkMoveBtn.addEventListener('click', () => {
+            const moveDiv = document.createElement('div');
+            moveDiv.className = 'bulk-move-picker';
+            moveDiv.style.cssText = 'position: fixed; top: 100px; right: 20px; background: var(--bg-secondary); border: 1px solid var(--bg-tertiary); border-radius: var(--radius-md); padding: var(--space-md); display: flex; flex-direction: column; gap: var(--space-sm); z-index: 1000;';
+            
+            const columns = [
+                { id: 'todo', label: '📝 To Do' },
+                { id: 'inprogress', label: '⏳ In Progress' },
+                { id: 'done', label: '✅ Done' }
+            ];
+            columns.forEach(col => {
+                const btn = document.createElement('button');
+                btn.style.cssText = 'padding: var(--space-sm) var(--space-md); background: var(--bg-tertiary); border: 1px solid var(--bg-glass); color: var(--text-primary); border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s;';
+                btn.textContent = col.label;
+                btn.addEventListener('mouseover', (e) => e.target.style.background = 'var(--accent-primary)');
+                btn.addEventListener('mouseout', (e) => e.target.style.background = 'var(--bg-tertiary)');
+                btn.addEventListener('click', () => {
+                    bulkMoveNotes(col.id);
+                    moveDiv.remove();
+                });
+                moveDiv.appendChild(btn);
+            });
+            
+            document.body.appendChild(moveDiv);
+            setTimeout(() => {
+                document.addEventListener('click', (e) => {
+                    if (!moveDiv.contains(e.target) && !bulkMoveBtn.contains(e.target)) {
+                        moveDiv.remove();
+                    }
+                }, { once: true });
+            }, 0);
+        });
+    }
+
+    if (bulkDeleteBtn) {
+        bulkDeleteBtn.addEventListener('click', bulkDeleteNotes);
+    }
+
+    if (cancelSelectBtn) {
+        cancelSelectBtn.addEventListener('click', () => {
+            AppState.selectMode = false;
+            AppState.selectedNoteIds.clear();
+            if (selectModeBtn) selectModeBtn.classList.remove('active');
+            renderNotes();
+            updateBulkActionBar();
+        });
+    }
 
     // Close sidebar when clicking outside (mobile)
     document.addEventListener('click', (e) => {

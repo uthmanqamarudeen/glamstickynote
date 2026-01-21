@@ -138,6 +138,7 @@
                             aria-label="Search notes">
                         <span class="search-icon">🔍</span>
                     </div>
+                    <button class="header-btn" id="selectModeBtn" title="Bulk select notes">📋 Select</button>
                     <div class="user-avatar" id="userAvatar">
                         <span>👤</span>
                     </div>
@@ -162,6 +163,18 @@
                         <span class="filter-label">This Week</span>
                         <span class="filter-count">0</span>
                     </button>
+                </div>
+            </div>
+
+            <!-- Bulk Action Bar -->
+            <div class="bulk-action-bar" id="bulkActionBar" style="display: none;">
+                <span class="selection-count">0 selected</span>
+                <div class="bulk-actions">
+                    <button class="bulk-btn" id="selectAllBtn" title="Select all visible notes">✓ All</button>
+                    <button class="bulk-btn" id="bulkColorBtn" title="Change color">🎨 Color</button>
+                    <button class="bulk-btn" id="bulkMoveBtn" title="Move to column">➡️ Move</button>
+                    <button class="bulk-btn danger" id="bulkDeleteBtn" title="Delete selected">🗑️ Delete</button>
+                    <button class="bulk-btn" id="cancelSelectBtn" title="Cancel selection">✕ Cancel</button>
                 </div>
             </div>
 
