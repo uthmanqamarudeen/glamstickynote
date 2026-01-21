@@ -1188,11 +1188,17 @@ function init() {
     }
 
     // PWA Installation
-    // PWA Installation
     let deferredPrompt;
 
-    // Detect iOS
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    // Helper function to detect iOS
+    function isIOS() {
+        return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    }
+
+    // Helper function to detect Android
+    function isAndroid() {
+        return /Android/i.test(navigator.userAgent);
+    }
 
     // Detect any mobile device
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -1206,12 +1212,12 @@ function init() {
         e.preventDefault();
         deferredPrompt = e;
         DOM.installApp.style.display = 'flex';
-        console.log('PWA install prompt ready');
+        console.log('PWA install prompt ready on', isAndroid() ? 'Android' : 'other platform');
     });
 
     DOM.installApp.addEventListener('click', async () => {
-        // iOS Instructions
-        if (isIOS) {
+        // iOS Instructions - check at click time
+        if (isIOS()) {
             showToast('To install: Tap Share ⬆️ → Add to Home Screen ➕', 'info');
             return;
         }
@@ -1227,8 +1233,12 @@ function init() {
             return;
         }
 
-        // Fallback
-        showToast('Install this app via your browser menu', 'info');
+        // Fallback for manual installation
+        if (isAndroid()) {
+            showToast('Tap your browser menu ⋮ → Install app / Add to home screen', 'info');
+        } else {
+            showToast('Install this app via your browser menu', 'info');
+        }
     });
 
     // Hide button if installed
