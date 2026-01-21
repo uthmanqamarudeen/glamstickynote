@@ -13,7 +13,11 @@ const AppState = {
     editingNoteId: null,
     currentFilter: 'today', // 'all', 'today', 'upcoming', 'date', 'tag', 'overdue', 'high-priority', 'this-week'
     selectedTag: null,
-    sortBy: 'date-desc'
+    sortBy: 'date-desc',
+    // History tracking
+    history: [],
+    historyIndex: -1,
+    maxHistorySize: 50
 };
 
 // ========================================
@@ -337,6 +341,64 @@ function loadFromStorage() {
         ];
         saveToStorage();
     }
+}
+
+// ========================================
+// History / Undo-Redo System
+// ========================================
+function pushHistory(action, description) {
+    // Remove any redo history if we're making a new action
+    if (AppState.historyIndex < AppState.history.length - 1) {
+        AppState.history = AppState.history.slice(0, AppState.historyIndex + 1);
+    }
+
+    // Create history entry
+    const entry = {
+        action,
+        description,
+        notesSnapshot: JSON.parse(JSON.stringify(AppState.notes))
+    };
+
+    AppState.history.push(entry);
+    AppState.historyIndex = AppState.history.length - 1;
+
+    // Limit history size
+    if (AppState.history.length > AppState.maxHistorySize) {
+        AppState.history.shift();
+        AppState.historyIndex--;
+    }
+}
+
+function undo() {
+    if (AppState.historyIndex < 0) {
+        showToast('Nothing to undo', 'info', null, 2000);
+        return;
+    }
+
+    AppState.historyIndex--;
+    const historyEntry = AppState.history[AppState.historyIndex];
+    
+    AppState.notes = JSON.parse(JSON.stringify(historyEntry.notesSnapshot));
+    saveToStorage();
+    renderNotes();
+    
+    showToast(`↩️ Undone: ${historyEntry.description}`, 'success', null, 2000);
+}
+
+function redo() {
+    if (AppState.historyIndex >= AppState.history.length - 1) {
+        showToast('Nothing to redo', 'info', null, 2000);
+        return;
+    }
+
+    AppState.historyIndex++;
+    const historyEntry = AppState.history[AppState.historyIndex];
+    
+    AppState.notes = JSON.parse(JSON.stringify(historyEntry.notesSnapshot));
+    saveToStorage();
+    renderNotes();
+    
+    showToast(`↪️ Redone: ${historyEntry.description}`, 'success', null, 2000);
 }
 
 // ========================================
@@ -789,14 +851,19 @@ function addNote(noteData) {
 
     AppState.notes.push(note);
     saveToStorage();
+    pushHistory('add', `Added: "${note.title}"`);
+    showToast(`✅ Added: "${note.title}"`, 'success', null, 2000);
     renderNotes();
 }
 
 function updateNote(id, updates) {
     const noteIndex = AppState.notes.findIndex(n => n.id === id);
     if (noteIndex !== -1) {
+        const oldTitle = AppState.notes[noteIndex].title;
         AppState.notes[noteIndex] = { ...AppState.notes[noteIndex], ...updates };
         saveToStorage();
+        pushHistory('edit', `Edited: "${oldTitle}"`);
+        showToast(`✏️ Edited: "${oldTitle}"`, 'success', null, 2000);
         renderNotes();
     }
 }
@@ -810,22 +877,12 @@ function deleteNote(id) {
         noteEl.style.animation = 'noteDisappear 0.3s ease-out forwards';
     }
 
-    // Store deleted note for undo
-    const deletedNote = { ...note };
-
     setTimeout(() => {
         AppState.notes = AppState.notes.filter(n => n.id !== id);
         saveToStorage();
+        pushHistory('delete', `Deleted: "${note.title}"`);
+        showToast(`🗑️ Deleted: "${note.title}"`, 'success', null, 2000);
         renderNotes();
-
-        // Show undo toast
-        showToast(`"${deletedNote.title}" deleted`, 'Undo', () => {
-            // Restore note
-            AppState.notes.push(deletedNote);
-            saveToStorage();
-            renderNotes();
-            showToast('Note restored!');
-        });
     }, 300);
 }
 
@@ -892,6 +949,8 @@ function toggleNoteComplete(id) {
             }
         }
         saveToStorage();
+        pushHistory('toggle', `${note.completed ? 'Completed' : 'Reopened'}: "${note.title}"`);
+        showToast(`${note.completed ? '✅ Completed' : '🔄 Reopened'}: "${note.title}"`, 'success', null, 2000);
         renderNotes();
     }
 }
@@ -899,6 +958,7 @@ function toggleNoteComplete(id) {
 function moveNote(id, newColumn) {
     const note = AppState.notes.find(n => n.id === id);
     if (note && note.column !== newColumn) {
+        const oldColumn = note.column;
         note.column = newColumn;
         if (newColumn === 'done') {
             note.completed = true;
@@ -906,6 +966,10 @@ function moveNote(id, newColumn) {
             note.completed = false;
         }
         saveToStorage();
+        
+        const columnNames = { 'todo': 'To Do', 'inprogress': 'In Progress', 'done': 'Done' };
+        pushHistory('move', `Moved "${note.title}" to ${columnNames[newColumn]}`);
+        showToast(`➡️ Moved "${note.title}" to ${columnNames[newColumn]}`, 'success', null, 2000);
         renderNotes();
     }
 }
@@ -1074,6 +1138,7 @@ function clearAllNotes() {
     if (confirm('Are you sure you want to delete ALL notes? This cannot be undone!')) {
         AppState.notes = [];
         saveToStorage();
+        pushHistory('clear', 'Cleared all notes');
         renderNotes();
         closeSettings();
     }
@@ -1273,6 +1338,18 @@ function initEventListeners() {
             }
         }
 
+        // Ctrl+Z: Undo
+        if (e.key === 'z' && e.ctrlKey && !isTyping) {
+            e.preventDefault();
+            undo();
+        }
+
+        // Ctrl+Y or Ctrl+Shift+Z: Redo
+        if ((e.key === 'y' && e.ctrlKey || e.key === 'z' && e.ctrlKey && e.shiftKey) && !isTyping) {
+            e.preventDefault();
+            redo();
+        }
+
         // Ctrl+N: New note
         if (e.key === 'n' && e.ctrlKey) {
             e.preventDefault();
@@ -1338,6 +1415,10 @@ function init() {
     initDOM(); // Initialize DOM references first
     addDynamicStyles();
     loadFromStorage();
+    
+    // Initialize history with current state
+    pushHistory('init', 'App initialized');
+    
     renderCalendar();
     setFilter('today'); // Start with today's view
     initEventListeners();
