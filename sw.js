@@ -1,22 +1,53 @@
-const CACHE_NAME = 'glamstickynote-v1';
+const CACHE_NAME = 'glamstickynote-v2'; // Updated version to force refresh
 const ASSETS = [
     './',
     './index.html',
     './css/styles.css',
     './js/app.js',
     './assets/icon-192.png',
-    './assets/icon-512.png',
-    'https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap'
+    './assets/icon-512.png'
+    // Note: Google Fonts removed - external fonts cause CORS issues when caching
 ];
 
 self.addEventListener('install', (e) => {
+    console.log('Service Worker: Installing...');
     e.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+        caches.open(CACHE_NAME).then((cache) => {
+            console.log('Service Worker: Caching files');
+            return cache.addAll(ASSETS);
+        }).catch(err => {
+            console.error('Service Worker: Cache failed', err);
+        })
     );
+    self.skipWaiting(); // Activate immediately
+});
+
+self.addEventListener('activate', (e) => {
+    console.log('Service Worker: Activating...');
+    e.waitUntil(
+        caches.keys().then((cacheNames) => {
+            return Promise.all(
+                cacheNames.map((cache) => {
+                    if (cache !== CACHE_NAME) {
+                        console.log('Service Worker: Clearing old cache');
+                        return caches.delete(cache);
+                    }
+                })
+            );
+        })
+    );
+    return self.clients.claim();
 });
 
 self.addEventListener('fetch', (e) => {
     e.respondWith(
-        caches.match(e.request).then((response) => response || fetch(e.request))
+        caches.match(e.request).then((response) => {
+            return response || fetch(e.request).catch(() => {
+                // Fallback for offline - return cached index for navigation requests
+                if (e.request.mode === 'navigate') {
+                    return caches.match('./index.html');
+                }
+            });
+        })
     );
 });
