@@ -148,17 +148,20 @@
             <!-- Smart Filters Bar -->
             <div class="smart-filters-bar" id="smartFiltersBar">
                 <div class="smart-filters" id="smartFilters">
-                    <button class="filter-pill" id="filterOverdue" data-filter="overdue" aria-label="Show overdue notes">
+                    <button class="filter-pill" id="filterOverdue" data-filter="overdue"
+                        aria-label="Show overdue notes">
                         <span class="filter-emoji">🔴</span>
                         <span class="filter-label">Overdue</span>
                         <span class="filter-count">0</span>
                     </button>
-                    <button class="filter-pill" id="filterHighPriority" data-filter="high-priority" aria-label="Show high priority notes">
+                    <button class="filter-pill" id="filterHighPriority" data-filter="high-priority"
+                        aria-label="Show high priority notes">
                         <span class="filter-emoji">⭐</span>
                         <span class="filter-label">High Priority</span>
                         <span class="filter-count">0</span>
                     </button>
-                    <button class="filter-pill" id="filterThisWeek" data-filter="this-week" aria-label="Show notes due this week">
+                    <button class="filter-pill" id="filterThisWeek" data-filter="this-week"
+                        aria-label="Show notes due this week">
                         <span class="filter-emoji">📆</span>
                         <span class="filter-label">This Week</span>
                         <span class="filter-count">0</span>
@@ -428,6 +431,10 @@
             </div>
         </div>
     </div>
+
+    <!-- Mobile Debugging Console (Remove after testing) -->
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>eruda.init();</script>
 
     <script src="js/app.js"></script>
 </body>
