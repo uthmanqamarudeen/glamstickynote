@@ -1705,8 +1705,9 @@ function init() {
             .catch(err => console.log('Service Worker registration failed', err));
     }
 
-    // PWA Installation
+    // PWA Installation with Enhanced Debugging
     let deferredPrompt;
+    let installPromptFired = false;
 
     // Helper function to detect iOS
     function isIOS() {
@@ -1718,44 +1719,97 @@ function init() {
         return /Android/i.test(navigator.userAgent);
     }
 
+    // Check if already running as installed PWA
+    function isStandalone() {
+        return window.matchMedia('(display-mode: standalone)').matches || 
+               window.navigator.standalone === true;
+    }
+
     // Detect any mobile device
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-    // Show button immediately on mobile (with platform-specific instructions)
-    if (isMobile) {
+    // Don't show install button if already installed
+    if (isStandalone()) {
+        console.log('✅ App is running in standalone mode (already installed)');
+        DOM.installApp.style.display = 'none';
+    } else if (isMobile) {
+        // Show button immediately on mobile (will update text based on platform)
         DOM.installApp.style.display = 'flex';
+        console.log('📱 Mobile device detected, showing install button');
     }
 
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
+        installPromptFired = true;
         DOM.installApp.style.display = 'flex';
-        console.log('PWA install prompt ready on', isAndroid() ? 'Android' : 'other platform');
+        console.log('✅ PWA install prompt captured and ready!', {
+            platform: isAndroid() ? 'Android' : isIOS() ? 'iOS' : 'Desktop',
+            canPrompt: true
+        });
     });
 
     DOM.installApp.addEventListener('click', async () => {
+        console.log('🖱️ Install button clicked', {
+            isStandalone: isStandalone(),
+            hasPrompt: !!deferredPrompt,
+            platform: isAndroid() ? 'Android' : isIOS() ? 'iOS' : 'Desktop'
+        });
+
+        // Check if already installed
+        if (isStandalone()) {
+            showToast('✅ App is already installed!', 'success');
+            DOM.installApp.style.display = 'none';
+            return;
+        }
+
         // iOS Instructions - check at click time
         if (isIOS()) {
-            showToast('To install: Tap Share ⬆️ → Add to Home Screen ➕', 'info');
+            showToast('📲 iOS: Tap Share button ⬆️ → Add to Home Screen', 'info', null, 5000);
             return;
         }
 
         // Android/Desktop Prompt
         if (deferredPrompt) {
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === 'accepted') {
-                deferredPrompt = null;
-                DOM.installApp.style.display = 'none';
+            console.log('🚀 Showing native install prompt...');
+            try {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log('📊 Install prompt result:', outcome);
+                
+                if (outcome === 'accepted') {
+                    showToast('✅ App installed successfully!', 'success');
+                    deferredPrompt = null;
+                    DOM.installApp.style.display = 'none';
+                } else {
+                    showToast('ℹ️ Installation cancelled', 'info');
+                }
+            } catch (error) {
+                console.error('❌ Error showing install prompt:', error);
+                showToast('⚠️ Unable to show install prompt. Try via browser menu.', 'warning', null, 4000);
             }
             return;
         }
 
-        // Fallback for manual installation
+        // Fallback: No prompt available
+        console.warn('⚠️ No install prompt available. Reasons could be:', {
+            'Already dismissed': 'User previously dismissed the prompt',
+            'Not served over HTTPS': location.protocol !== 'https:' && location.hostname !== 'localhost',
+            'PWA criteria not met': 'Manifest or service worker issue',
+            'Browser doesn\'t support': !('BeforeInstallPromptEvent' in window)
+        });
+
+        // Check if it's an HTTPS issue
+        if (location.protocol !== 'https:' && location.hostname !== 'localhost' && !location.hostname.startsWith('192.168')) {
+            showToast('⚠️ PWA requires HTTPS. Please access via https:// or use ngrok/similar tool', 'warning', null, 6000);
+            return;
+        }
+
+        // Platform-specific fallback instructions
         if (isAndroid()) {
-            showToast('Tap your browser menu ⋮ → Install app / Add to home screen', 'info');
+            showToast('📲 Android: Tap menu (⋮) → Install app or Add to home screen', 'info', null, 5000);
         } else {
-            showToast('Install this app via your browser menu', 'info');
+            showToast('💡 Access browser menu to install this app', 'info', null, 4000);
         }
     });
 
@@ -1763,8 +1817,43 @@ function init() {
     window.addEventListener('appinstalled', () => {
         DOM.installApp.style.display = 'none';
         deferredPrompt = null;
-        console.log('PWA installed successfully');
+        showToast('🎉 GlamStickyNote installed successfully!', 'success');
+        console.log('✅ PWA installed successfully');
     });
+
+    // Log diagnostic info after page load
+    setTimeout(() => {
+        console.log('🔍 PWA Installation Diagnostics:', {
+            'Install prompt fired': installPromptFired,
+            'Is standalone': isStandalone(),
+            'Protocol': location.protocol,
+            'Hostname': location.hostname,
+            'Service Worker': 'serviceWorker' in navigator ? 'Supported' : 'Not supported',
+            'Platform': isAndroid() ? 'Android' : isIOS() ? 'iOS' : 'Desktop/Other',
+            'User Agent': navigator.userAgent
+        });
+
+        // Check if service worker registered
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistration().then(reg => {
+                console.log('📋 Service Worker Status:', reg ? 'Registered ✅' : 'Not registered ❌');
+                if (reg) {
+                    console.log('  - State:', reg.active?.state || 'No active worker');
+                }
+            });
+        }
+
+        // If no prompt after 3 seconds on Android, provide guidance
+        if (isAndroid() && !installPromptFired && !isStandalone()) {
+            console.warn('⚠️ Install prompt not fired after 3s. Possible issues:');
+            console.warn('  1. Not served over HTTPS (required for PWA)');
+            console.warn('  2. Manifest.json has errors');
+            console.warn('  3. Service worker failed to register');
+            console.warn('  4. User already dismissed the prompt');
+            console.warn('  5. Chrome engagement heuristics not met');
+            console.warn('📝 Try: chrome://flags/#bypass-app-banner-engagement-checks');
+        }
+    }, 3000);
 
     console.log('✨ GlamStickyNote initialized!');
 }

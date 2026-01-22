@@ -1,19 +1,23 @@
 {
   "name": "GlamStickyNote",
   "short_name": "GlamSticky",
-  "description": "Premium digital sticky notes for your daily tasks.",
+  "description": "Premium digital sticky notes for your daily tasks and schedule management",
+  "lang": "en-US",
+  "dir": "ltr",
   "scope": "./",
-  "start_url": "./index.html",
+  "start_url": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
-  "categories": ["productivity"],
+  "prefer_related_applications": false,
+  "categories": ["productivity", "utilities"],
   "screenshots": [
     {
-      "src": "assets/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow"
     }
   ],
   "icons": [
@@ -21,13 +25,13 @@
       "src": "assets/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "assets/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ]
 }
