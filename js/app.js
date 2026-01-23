@@ -200,7 +200,7 @@ function isThisWeek(note) {
     startOfWeek.setDate(today.getDate() - today.getDay()); // Start of week (Sunday)
     const endOfWeek = new Date(startOfWeek);
     endOfWeek.setDate(startOfWeek.getDate() + 6); // End of week (Saturday)
-    
+
     const noteDate = new Date(note.date);
     return noteDate >= startOfWeek && noteDate <= endOfWeek;
 }
@@ -209,19 +209,19 @@ function countSmartFilters() {
     const overdueCount = AppState.notes.filter(isOverdue).length;
     const highPriorityCount = AppState.notes.filter(isHighPriority).length;
     const thisWeekCount = AppState.notes.filter(isThisWeek).length;
-    
+
     return { overdueCount, highPriorityCount, thisWeekCount };
 }
 
 function updateSmartFilterCounts() {
     const { overdueCount, highPriorityCount, thisWeekCount } = countSmartFilters();
-    
+
     const filterPills = [
         { elem: DOM.filterOverdue, count: overdueCount },
         { elem: DOM.filterHighPriority, count: highPriorityCount },
         { elem: DOM.filterThisWeek, count: thisWeekCount }
     ];
-    
+
     filterPills.forEach(({ elem, count }) => {
         if (elem) {
             elem.querySelector('.filter-count').textContent = count;
@@ -380,11 +380,11 @@ function undo() {
 
     AppState.historyIndex--;
     const historyEntry = AppState.history[AppState.historyIndex];
-    
+
     AppState.notes = JSON.parse(JSON.stringify(historyEntry.notesSnapshot));
     saveToStorage();
     renderNotes();
-    
+
     showToast(`↩️ Undone: ${historyEntry.description}`, 'success', null, 2000);
 }
 
@@ -396,11 +396,11 @@ function redo() {
 
     AppState.historyIndex++;
     const historyEntry = AppState.history[AppState.historyIndex];
-    
+
     AppState.notes = JSON.parse(JSON.stringify(historyEntry.notesSnapshot));
     saveToStorage();
     renderNotes();
-    
+
     showToast(`↪️ Redone: ${historyEntry.description}`, 'success', null, 2000);
 }
 
@@ -497,14 +497,14 @@ function clearSelection() {
 function bulkDeleteNotes() {
     const count = AppState.selectedNoteIds.size;
     if (count === 0) return;
-    
+
     if (!confirm(`Delete ${count} note${count > 1 ? 's' : ''}?`)) return;
 
     AppState.notes = AppState.notes.filter(n => !AppState.selectedNoteIds.has(n.id));
     saveToStorage();
     pushHistory('bulk-delete', `Deleted ${count} note${count > 1 ? 's' : ''}`);
     showToast(`🗑️ Deleted ${count} note${count > 1 ? 's' : ''}`, 'success', null, 2000);
-    
+
     AppState.selectedNoteIds.clear();
     AppState.selectMode = false;
     renderNotes();
@@ -530,7 +530,7 @@ function bulkMoveNotes(newColumn) {
     const columnNames = { 'todo': 'To Do', 'inprogress': 'In Progress', 'done': 'Done' };
     pushHistory('bulk-move', `Moved ${count} note${count > 1 ? 's' : ''} to ${columnNames[newColumn]}`);
     showToast(`➡️ Moved ${count} note${count > 1 ? 's' : ''} to ${columnNames[newColumn]}`, 'success', null, 2000);
-    
+
     AppState.selectedNoteIds.clear();
     renderNotes();
     updateBulkActionBar();
@@ -549,7 +549,7 @@ function bulkColorNotes(color) {
     saveToStorage();
     pushHistory('bulk-color', `Changed color of ${count} note${count > 1 ? 's' : ''}`);
     showToast(`🎨 Changed color of ${count} note${count > 1 ? 's' : ''}`, 'success', null, 2000);
-    
+
     renderNotes();
     updateBulkActionBar();
 }
@@ -557,7 +557,7 @@ function bulkColorNotes(color) {
 function updateBulkActionBar() {
     const bar = document.getElementById('bulkActionBar');
     if (!bar) return;
-    
+
     if (AppState.selectMode && AppState.selectedNoteIds.size > 0) {
         bar.style.display = 'flex';
         bar.querySelector('.selection-count').textContent = `${AppState.selectedNoteIds.size} selected`;
@@ -870,7 +870,7 @@ function createNoteElement(note) {
             updateBulkActionBar();
         });
         noteEl.appendChild(selectCheckbox);
-        
+
         if (AppState.selectedNoteIds.has(note.id)) {
             noteEl.classList.add('selected-for-bulk');
         }
@@ -913,12 +913,12 @@ function createNoteElement(note) {
     // Quick Edit - double-click to edit inline
     const titleEl = noteEl.querySelector('.note-title');
     const descEl = noteEl.querySelector('.note-description');
-    
+
     titleEl.addEventListener('dblclick', (e) => {
         e.stopPropagation();
         enableQuickEdit(noteEl, note.id);
     });
-    
+
     descEl.addEventListener('dblclick', (e) => {
         e.stopPropagation();
         enableQuickEdit(noteEl, note.id);
@@ -1181,7 +1181,7 @@ function moveNote(id, newColumn) {
             note.completed = false;
         }
         saveToStorage();
-        
+
         const columnNames = { 'todo': 'To Do', 'inprogress': 'In Progress', 'done': 'Done' };
         pushHistory('move', `Moved "${note.title}" to ${columnNames[newColumn]}`);
         showToast(`➡️ Moved "${note.title}" to ${columnNames[newColumn]}`, 'success', null, 2000);
@@ -1690,10 +1690,10 @@ function init() {
     initDOM(); // Initialize DOM references first
     addDynamicStyles();
     loadFromStorage();
-    
+
     // Initialize history with current state
     pushHistory('init', 'App initialized');
-    
+
     renderCalendar();
     setFilter('today'); // Start with today's view
     initEventListeners();
@@ -1721,8 +1721,8 @@ function init() {
 
     // Check if already running as installed PWA
     function isStandalone() {
-        return window.matchMedia('(display-mode: standalone)').matches || 
-               window.navigator.standalone === true;
+        return window.matchMedia('(display-mode: standalone)').matches ||
+            window.navigator.standalone === true;
     }
 
     // Detect any mobile device
@@ -1732,10 +1732,11 @@ function init() {
     if (isStandalone()) {
         console.log('✅ App is running in standalone mode (already installed)');
         DOM.installApp.style.display = 'none';
-    } else if (isMobile) {
-        // Show button immediately on mobile (will update text based on platform)
+    } else if (isIOS()) {
+        // Show button immediately only on iOS (manual instructions needed)
+        // Android/Desktop will wait for beforeinstallprompt event
         DOM.installApp.style.display = 'flex';
-        console.log('📱 Mobile device detected, showing install button');
+        console.log('📱 iOS device detected, showing install instructions button');
     }
 
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -1776,7 +1777,7 @@ function init() {
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
                 console.log('📊 Install prompt result:', outcome);
-                
+
                 if (outcome === 'accepted') {
                     showToast('✅ App installed successfully!', 'success');
                     deferredPrompt = null;
