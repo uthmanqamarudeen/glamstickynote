@@ -3,6 +3,11 @@
    ======================================== */
 
 // ========================================
+// App Configuration
+// ========================================
+const APP_VERSION = '1.0.0';
+
+// ========================================
 // State Management
 // ========================================
 const AppState = {
@@ -1720,6 +1725,12 @@ function init() {
     initDOM(); // Initialize DOM references first
     addDynamicStyles();
     loadFromStorage();
+
+    // Display app version in settings
+    const versionElement = document.getElementById('appVersion');
+    if (versionElement) {
+        versionElement.textContent = `v${APP_VERSION}`;
+    }
 
     // Initialize history with current state
     pushHistory('init', 'App initialized');
