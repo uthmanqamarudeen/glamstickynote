@@ -1,11 +1,12 @@
-const CACHE_NAME = 'glamstickynote-v5'; // Updated to v5
+const CACHE_NAME = 'glamstickynote-v6'; // Updated to v6 for SEO enhancements
 const ASSETS = [
     './',
     './index.html',
     './css/styles.css',
     './js/app.js',
     './assets/icon-192.png',
-    './assets/icon-512.png'
+    './assets/icon-512.png',
+    './assets/preview.png'
     // Note: Google Fonts removed - external fonts cause CORS issues when caching
 ];
 
