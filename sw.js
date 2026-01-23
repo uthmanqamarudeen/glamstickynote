@@ -10,10 +10,8 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (e) => {
-    console.log('Service Worker: Installing...');
     e.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            console.log('Service Worker: Caching files');
             return cache.addAll(ASSETS);
         })
         // Removed .catch() to let the error bubble up and fail installation if caching fails
@@ -23,13 +21,11 @@ self.addEventListener('install', (e) => {
 });
 
 self.addEventListener('activate', (e) => {
-    console.log('Service Worker: Activating...');
     e.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
                 cacheNames.map((cache) => {
                     if (cache !== CACHE_NAME) {
-                        console.log('Service Worker: Clearing old cache');
                         return caches.delete(cache);
                     }
                 })
