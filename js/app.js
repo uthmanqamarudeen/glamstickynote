@@ -1840,6 +1840,28 @@ function init() {
         showToast('🎉 GlamStickyNote installed successfully!', 'success');
     });
 
+    // Offline/Online Status Indicator
+    const offlineIndicator = document.getElementById('offlineIndicator');
+
+    window.addEventListener('offline', () => {
+        if (offlineIndicator) {
+            offlineIndicator.classList.add('visible');
+        }
+        showToast('📡 You are offline. Changes will sync when reconnected.', 'warning', null, 3000);
+    });
+
+    window.addEventListener('online', () => {
+        if (offlineIndicator) {
+            offlineIndicator.classList.remove('visible');
+        }
+        showToast('✅ Back online! Data syncing...', 'success', null, 2000);
+    });
+
+    // Check initial status
+    if (!navigator.onLine && offlineIndicator) {
+        offlineIndicator.classList.add('visible');
+    }
+
 }
 
 // Start the app when DOM is ready

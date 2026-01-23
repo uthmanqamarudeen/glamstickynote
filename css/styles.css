@@ -2188,3 +2188,62 @@ body {
         transform: translate(10px, -60%);
     }
 }
+
+/* ========================================
+   Offline Indicator
+   ======================================== */
+.offline-indicator {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
+    font-size: 0.875rem;
+    font-weight: 600;
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.offline-indicator.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.offline-icon {
+    font-size: 1.25rem;
+    filter: grayscale(100%);
+}
+
+.offline-text {
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .offline-indicator {
+        top: 10px;
+        right: 10px;
+        padding: var(--space-xs) var(--space-sm);
+        font-size: 0.75rem;
+    }
+
+    .offline-icon {
+        font-size: 1rem;
+    }
+
+    .offline-text {
+        font-size: 0.625rem;
+    }
+}
