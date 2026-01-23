@@ -1732,11 +1732,10 @@ function init() {
     if (isStandalone()) {
         console.log('✅ App is running in standalone mode (already installed)');
         DOM.installApp.style.display = 'none';
-    } else if (isIOS()) {
-        // Show button immediately only on iOS (manual instructions needed)
-        // Android/Desktop will wait for beforeinstallprompt event
+    } else if (isMobile) {
+        // Show button immediately on mobile (will update text based on platform)
         DOM.installApp.style.display = 'flex';
-        console.log('📱 iOS device detected, showing install instructions button');
+        console.log('📱 Mobile device detected, showing install button');
     }
 
     window.addEventListener('beforeinstallprompt', (e) => {

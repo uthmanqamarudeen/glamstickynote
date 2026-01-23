@@ -1,4 +1,4 @@
-const CACHE_NAME = 'glamstickynote-v2'; // Updated version to force refresh
+const CACHE_NAME = 'glamstickynote-v3'; // Updated to v3
 const ASSETS = [
     './',
     './index.html',
@@ -15,9 +15,9 @@ self.addEventListener('install', (e) => {
         caches.open(CACHE_NAME).then((cache) => {
             console.log('Service Worker: Caching files');
             return cache.addAll(ASSETS);
-        }).catch(err => {
-            console.error('Service Worker: Cache failed', err);
         })
+        // Removed .catch() to let the error bubble up and fail installation if caching fails
+        // This is crucial for PWA criteria debugging
     );
     self.skipWaiting(); // Activate immediately
 });
