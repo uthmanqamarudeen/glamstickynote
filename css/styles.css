@@ -1808,7 +1808,8 @@ body {
     }
 
     .filter-label {
-        display: none; /* Hide labels on tablet to save space */
+        display: none;
+        /* Hide labels on tablet to save space */
     }
 
     .filter-count {
@@ -1820,7 +1821,8 @@ body {
 
 @media (max-width: 600px) {
     .smart-filters-bar {
-        display: none; /* Hide filters bar on mobile */
+        display: none;
+        /* Hide filters bar on mobile */
     }
 }
 
@@ -1865,6 +1867,7 @@ body {
         opacity: 0;
         transform: translateY(-10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -2065,6 +2068,7 @@ body {
         transform: scale(0) rotate(-45deg);
         opacity: 0;
     }
+
     to {
         transform: scale(1) rotate(0);
         opacity: 1;
@@ -2088,5 +2092,66 @@ body {
         display: flex;
         align-items: center;
         justify-content: center;
+    }
+}
+
+/* ========================================
+   Install Modal
+   ======================================== */
+.install-guide {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-sm) 0;
+}
+
+.step-guide {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-sm);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+}
+
+.step-num {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.pointing-arrow {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 2rem;
+    animation: point 1.5s infinite ease-in-out;
+}
+
+@keyframes point {
+
+    0%,
+    100% {
+        transform: translate(0, -50%);
+    }
+
+    50% {
+        transform: translate(10px, -60%);
     }
 }

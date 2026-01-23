@@ -97,6 +97,11 @@ function initDOM() {
         // Quick Add
         quickAddInput: document.getElementById('quickAddInput'),
 
+        // Manual Install Modal
+        installModal: document.getElementById('install-modal'),
+        installClose: document.getElementById('installClose'),
+        installGotIt: document.getElementById('installGotIt'),
+
         // Toast
         toastContainer: document.getElementById('toastContainer'),
 
@@ -1600,6 +1605,15 @@ function initEventListeners() {
         }
     });
 
+    // Install Modal
+    if (DOM.installClose) {
+        DOM.installClose.addEventListener('click', closeInstallModal);
+        DOM.installGotIt.addEventListener('click', closeInstallModal);
+        DOM.installModal.addEventListener('click', (e) => {
+            if (e.target === DOM.installModal) closeInstallModal();
+        });
+    }
+
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
         // Don't trigger shortcuts if typing in an input
@@ -1661,6 +1675,18 @@ function initEventListeners() {
             }
         }
     });
+}
+
+function openInstallModal() {
+    if (DOM.installModal) {
+        DOM.installModal.classList.add('active');
+    }
+}
+
+function closeInstallModal() {
+    if (DOM.installModal) {
+        DOM.installModal.classList.remove('active');
+    }
 }
 
 // ========================================
@@ -1805,11 +1831,11 @@ function init() {
             return;
         }
 
-        // Platform-specific fallback instructions
+        // Platform-specific fallback
         if (isAndroid()) {
-            showToast('📲 Android: Tap menu (⋮) → Install app or Add to home screen', 'info', null, 5000);
+            openInstallModal(); // Show manual instructions instead of generic toast
         } else {
-            showToast('💡 Access browser menu to install this app', 'info', null, 4000);
+            showToast('💡 Access browser menu to install this app touch', 'info', null, 4000);
         }
     });
 
