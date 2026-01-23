@@ -277,7 +277,7 @@
     </div>
 
     <!-- Add/Edit Note Modal -->
-    <div class="modal-overlay" id="noteModal">
+    <div class="modal-overlay" id="noteModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
         <div class="modal-content sticky-note-modal">
             <div class="modal-header">
                 <h2 class="modal-title" id="modalTitle">New Note</h2>
@@ -395,10 +395,10 @@
     </template>
 
     <!-- Settings Modal -->
-    <div class="modal-overlay" id="settingsModal">
+    <div class="modal-overlay" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
         <div class="modal-content settings-modal">
             <div class="modal-header">
-                <h2 class="modal-title">⚙️ Settings</h2>
+                <h2 class="modal-title" id="settingsTitle">⚙️ Settings</h2>
                 <button class="modal-close" id="settingsClose" aria-label="Close settings">×</button>
             </div>
             <div class="settings-content">
@@ -425,13 +425,14 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <!-- Mobile Bulk Select FAB -->
-    <button class="mobile-bulk-fab" id="mobileBulkFab" title="Bulk select notes">📋</button>
+    <button class="mobile-bulk-fab" id="mobileBulkFab" title="Bulk select notes"
+        aria-label="Bulk select notes">📋</button>
 
     <!-- Keyboard Shortcuts Modal -->
-    <div class="modal-overlay" id="shortcutsModal">
+    <div class="modal-overlay" id="shortcutsModal" role="dialog" aria-modal="true" aria-labelledby="shortcutsTitle">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">⌨️ Keyboard Shortcuts</h2>
+                <h2 class="modal-title" id="shortcutsTitle">⌨️ Keyboard Shortcuts</h2>
                 <button class="modal-close" id="shortcutsClose" aria-label="Close">×</button>
             </div>
             <div class="shortcuts-list">
@@ -468,11 +469,11 @@
     </div>
 
     <!-- Manual Install Modal -->
-    <div class="modal" id="install-modal">
+    <div class="modal" id="install-modal" role="dialog" aria-modal="true" aria-labelledby="installTitle">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Install App 📲</h2>
-                <button class="modal-close" id="installClose">×</button>
+                <h2 id="installTitle">Install App 📲</h2>
+                <button class="modal-close" id="installClose" aria-label="Close installation guide">×</button>
             </div>
             <div class="install-guide">
                 <p>To install GlamStickyNote on your device:</p>
