@@ -1,4 +1,4 @@
-const CACHE_NAME = 'glamstickynote-v3'; // Updated to v3
+const CACHE_NAME = 'glamstickynote-v4'; // Updated to v4
 const ASSETS = [
     './',
     './index.html',

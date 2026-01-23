@@ -1678,8 +1678,15 @@ function initEventListeners() {
 }
 
 function openInstallModal() {
-    if (DOM.installModal) {
-        DOM.installModal.classList.add('active');
+    console.log('🔍 Attempting to open manual install modal...');
+    const modal = document.getElementById('install-modal');
+    if (modal) {
+        modal.classList.add('active');
+        console.log('✅ Manual install modal opened (class added)');
+    } else {
+        console.error('❌ Install modal element NOT found in DOM!');
+        // Last resort fallback
+        alert('To install this app:\n1. Tap the browser menu (⋮)\n2. Select "Install App"');
     }
 }
 
