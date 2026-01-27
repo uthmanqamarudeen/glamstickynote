@@ -126,18 +126,25 @@ body {
     gap: var(--space-md);
 }
 
+.splash-icon {
+    width: 80px;
+    height: 80px;
+    margin-bottom: var(--space-xs);
+    animation: pulseLogo 2s infinite ease-in-out;
+}
+
 .splash-logo {
     font-family: var(--font-handwritten);
     font-size: 3.5rem;
     font-weight: 700;
-    animation: pulseLogo 2s infinite ease-in-out;
-}
+    /* Glam Gradient */
+    background: linear-gradient(135deg, var(--note-pink), var(--note-lavender));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 
-.splash-tagline {
-    font-size: 1.1rem;
-    color: var(--text-secondary);
-    letter-spacing: 1px;
-    opacity: 0.8;
+    animation: pulseLogo 2s infinite ease-in-out;
+    animation-delay: 0.1s;
 }
 
 .splash-spinner {
