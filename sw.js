@@ -1,7 +1,8 @@
-const CACHE_NAME = 'glamstickynote-v6'; // Updated to v6 for SEO enhancements
+const CACHE_NAME = 'glamstickynote-v7'; // Updated to v7 for Splash Screen & Notifications
 const ASSETS = [
     './',
     './index.html',
+    './manifest.json',
     './css/styles.css',
     './js/app.js',
     './assets/icon-192.png',
