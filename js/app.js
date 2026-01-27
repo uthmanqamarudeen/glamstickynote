@@ -91,6 +91,7 @@ function initDOM() {
         settingsModal: document.getElementById('settingsModal'),
         settingsClose: document.getElementById('settingsClose'),
         exportData: document.getElementById('exportData'),
+        exportCSV: document.getElementById('exportCSV'),
         importData: document.getElementById('importData'),
         importFile: document.getElementById('importFile'),
         clearAllData: document.getElementById('clearAllData'),
@@ -1338,6 +1339,44 @@ function exportNotes() {
     URL.revokeObjectURL(url);
 }
 
+function exportToCSV() {
+    if (!AppState.notes || AppState.notes.length === 0) {
+        showToast('⚠️ No notes to export.', 'warning');
+        return;
+    }
+
+    // Define headers
+    const headers = ['Title', 'Description', 'Status', 'Priority', 'Due Date', 'Tags', 'Color'];
+
+    // Create CSV rows
+    const csvRows = [headers.join(',')];
+
+    AppState.notes.forEach(note => {
+        const row = [
+            `"${(note.title || '').replace(/"/g, '""')}"`, // Escape quotes
+            `"${(note.description || '').replace(/"/g, '""')}"`,
+            note.column,
+            note.priority,
+            note.date || '',
+            `"${(note.tags || []).join(';')}"`, // Semicolon separate tags
+            note.color
+        ];
+        csvRows.push(row.join(','));
+    });
+
+    const csvContent = csvRows.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `glamstickynote_export_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+
+    URL.revokeObjectURL(url);
+    showToast('📊 CSV Export successful!', 'success');
+}
+
 function importNotes(file) {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -1533,6 +1572,7 @@ function initEventListeners() {
         if (e.target === DOM.settingsModal) closeSettings();
     });
     DOM.exportData.addEventListener('click', exportNotes);
+    DOM.exportCSV.addEventListener('click', exportToCSV);
     DOM.importData.addEventListener('click', () => DOM.importFile.click());
     DOM.importFile.addEventListener('change', (e) => {
         if (e.target.files[0]) {

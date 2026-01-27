@@ -430,8 +430,11 @@
                 </div>
                 <div class="setting-group">
                     <h3 class="setting-title">Data Management</h3>
-                    <button class="btn btn-secondary" id="exportData">📤 Export Notes</button>
-                    <button class="btn btn-secondary" id="importData">📥 Import Notes</button>
+                    <div class="export-buttons" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;">
+                        <button class="btn btn-secondary" id="exportData" style="flex: 1;">📤 Export JSON</button>
+                        <button class="btn btn-secondary" id="exportCSV" style="flex: 1;">📊 Export CSV</button>
+                    </div>
+                    <button class="btn btn-secondary" id="importData" style="width: 100%;">📥 Import Notes</button>
                     <input type="file" id="importFile" accept=".json" style="display: none;">
                 </div>
                 <div class="setting-group">
