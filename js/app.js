@@ -1719,6 +1719,95 @@ function addDynamicStyles() {
 }
 
 // ========================================
+// Notification System
+// ========================================
+function initNotifications() {
+    const toggle = document.getElementById('notificationToggle');
+    if (!toggle) return;
+
+    // Load saved preference
+    const isEnabled = localStorage.getItem('notificationsEnabled') === 'true';
+    toggle.checked = isEnabled;
+
+    toggle.addEventListener('change', async (e) => {
+        if (e.target.checked) {
+            // Request permission
+            if (!('Notification' in window)) {
+                showToast('❌ This browser does not support notifications.', 'error');
+                e.target.checked = false;
+                return;
+            }
+
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                localStorage.setItem('notificationsEnabled', 'true');
+                checkReminders(); // Check immediately
+                showToast('🔔 Notifications enabled!', 'success');
+
+                // Welcome notification
+                new Notification('GlamStickyNote', {
+                    body: 'You will now be notified of tasks due today.',
+                    icon: 'assets/icon-192.png'
+                });
+            } else {
+                e.target.checked = false;
+                showToast('❌ Permission denied. Please enable in browser settings.', 'error');
+            }
+        } else {
+            localStorage.setItem('notificationsEnabled', 'false');
+            showToast('🔕 Notifications disabled.', 'neutral');
+        }
+    });
+
+    // Check on load if enabled
+    if (isEnabled && 'Notification' in window && Notification.permission === 'granted') {
+        checkReminders();
+    }
+
+    // Check periodically (every 15 minutes) to ensure app stays "alive" for notifications
+    setInterval(() => {
+        if (localStorage.getItem('notificationsEnabled') === 'true') {
+            checkReminders();
+        }
+    }, 15 * 60 * 1000);
+}
+
+function checkReminders() {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
+    const today = new Date().toISOString().split('T')[0];
+    const notesDueToday = AppState.notes.filter(note => {
+        // Only count active notes in Todo or In Progress
+        const isActive = note.column === 'todo' || note.column === 'inprogress';
+        return note.date === today && isActive;
+    });
+
+    if (notesDueToday.length === 0) return;
+
+    // Check if we already notified today to avoid spam
+    const lastNotified = localStorage.getItem('lastNotificationDate');
+    if (lastNotified === today) return;
+
+    // Send notification
+    const text = notesDueToday.length === 1
+        ? `Task due today: ${notesDueToday[0].title}`
+        : `You have ${notesDueToday.length} tasks due today! 📅`;
+
+    try {
+        new Notification('GlamStickyNote', {
+            body: text,
+            icon: 'assets/icon-192.png',
+            tag: 'daily-reminder', // Replaces older notifications with same tag
+            requireInteraction: true // Keeps notification visible until clicked
+        });
+
+        localStorage.setItem('lastNotificationDate', today);
+    } catch (e) {
+        console.error('Notification failed:', e);
+    }
+}
+
+// ========================================
 // Initialize App
 // ========================================
 function init() {
@@ -1738,6 +1827,7 @@ function init() {
     renderCalendar();
     setFilter('today'); // Start with today's view
     initEventListeners();
+    initNotifications(); // Initialize notifications logic
 
     // Register Service Worker
     if ('serviceWorker' in navigator) {
