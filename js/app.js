@@ -1808,12 +1808,31 @@ function checkReminders() {
 }
 
 // ========================================
+// Splash Screen Logic
+// ========================================
+function handleSplashScreen() {
+    const splash = document.getElementById('splashScreen');
+    if (!splash) return;
+
+    // Minimum display time of 1.5 seconds for branding effect
+    setTimeout(() => {
+        splash.classList.add('fade-out');
+
+        // Remove from DOM after transition matches CSS (0.5s)
+        setTimeout(() => {
+            splash.remove();
+        }, 500);
+    }, 1500);
+}
+
+// ========================================
 // Initialize App
 // ========================================
 function init() {
     initDOM(); // Initialize DOM references first
     addDynamicStyles();
     loadFromStorage();
+    handleSplashScreen(); // Show loading screen
 
     // Display app version in settings
     const versionElement = document.getElementById('appVersion');
