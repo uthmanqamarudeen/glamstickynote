@@ -2420,3 +2420,73 @@ input:checked+.slider:before {
         font-size: 0.625rem;
     }
 }
+/* Date/Time Inputs Responsiveness */
+.date-time-group {
+    display: flex;
+    gap: var(--space-sm);
+    width: 100%;
+}
+
+.date-time-group input[type='date'] {
+    flex: 2;
+}
+
+.date-time-group input[type='time'] {
+    flex: 1;
+}
+
+/* Fix Modal Overflow */
+.modal-content {
+    max-width: 500px;
+    width: 90%;
+    margin: 0 auto;
+}
+
+@media (max-width: 500px) {
+    .date-time-group {
+        flex-direction: column;
+    }
+    
+    .date-time-group input {
+        width: 100%;
+        flex: auto;
+    }
+}
+
+/* ROBUST MODAL FIXES */
+.modal-content {
+    box-sizing: border-box;
+    width: 90% !important;
+    max-width: 450px !important;
+    padding: var(--space-md) !important;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.date-time-group {
+    flex-wrap: wrap; /* Allow wrapping */
+}
+
+/* Force stack on smaller screens */
+@media (max-width: 500px) {
+    .note-form .form-row {
+        grid-template-columns: 1fr !important;
+        gap: var(--space-sm) !important;
+    }
+
+    .date-time-group {
+        flex-direction: column !important;
+        width: 100% !important;
+    }
+    
+    .date-time-group input {
+        width: 100% !important;
+        flex: none !important;
+        min-width: 0 !important; /* Fix flex overflow */
+    }
+
+    .form-input {
+        width: 100%; /* Ensure inputs don't overflow */
+        box-sizing: border-box;
+    }
+}

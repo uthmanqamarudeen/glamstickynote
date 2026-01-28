@@ -83,6 +83,7 @@ function initDOM() {
         noteTitle: document.getElementById('noteTitle'),
         noteDescription: document.getElementById('noteDescription'),
         noteDate: document.getElementById('noteDate'),
+        noteTime: document.getElementById('noteTime'),
         noteTags: document.getElementById('noteTags'),
         noteRecurrence: document.getElementById('noteRecurrence'),
         modalColors: document.getElementById('modalColors'),
@@ -127,14 +128,23 @@ function generateId() {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
 
-function formatDate(date) {
+function formatDate(date, time = null) {
     if (!date) return '';
     const d = new Date(date);
-    return d.toLocaleDateString('en-US', {
+    let str = d.toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
         year: 'numeric'
     });
+    if (time) {
+        // Convert 24h to 12h
+        const [hours, mins] = time.split(':');
+        const h = parseInt(hours);
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        const h12 = h % 12 || 12;
+        str += `, ${h12}:${mins} ${ampm}`;
+    }
+    return str;
 }
 
 function formatDateISO(date) {
@@ -831,7 +841,7 @@ function createNoteElement(note) {
         dateEl.parentNode.insertBefore(badge, dateEl);
     }
 
-    noteEl.querySelector('.note-date').textContent = formatDate(note.date);
+    noteEl.querySelector('.note-date').textContent = formatDate(note.date, note.time);
 
     // Render recurrence badge
     const recurrenceEl = noteEl.querySelector('.note-recurrence');
@@ -956,17 +966,20 @@ function renderNotes(searchQuery = '') {
 
     // Sort notes
     filteredNotes.sort((a, b) => {
+        const dateA = (a.date || '') + (a.time || '00:00');
+        const dateB = (b.date || '') + (b.time || '00:00');
+
         switch (AppState.sortBy) {
             case 'date-desc':
-                return (b.date || '').localeCompare(a.date || '');
+                return dateB.localeCompare(dateA);
             case 'date-asc':
-                return (a.date || '').localeCompare(b.date || '');
+                return dateA.localeCompare(dateB);
             case 'priority-desc':
                 const pMap = { 'high': 3, 'medium': 2, 'low': 1, 'none': 0 };
                 const pA = pMap[a.priority || 'medium'] || 0;
                 const pB = pMap[b.priority || 'medium'] || 0;
                 if (pB !== pA) return pB - pA;
-                return (b.date || '').localeCompare(a.date || ''); // Fallback to date
+                return dateB.localeCompare(dateA); // Fallback to date
             case 'title-asc':
                 return a.title.localeCompare(b.title);
             default:
@@ -1067,6 +1080,7 @@ function addNote(noteData) {
         title: noteData.title,
         description: noteData.description || '',
         date: noteData.date || formatDateISO(new Date()),
+        time: noteData.time || '',
         color: noteData.color || AppState.selectedColor,
         column: noteData.column || 'todo',
         completed: false,
@@ -1269,7 +1283,9 @@ function openModal(column = 'todo') {
     DOM.noteForm.reset();
     DOM.noteId.value = '';
     DOM.noteColumn.value = column;
+    DOM.noteColumn.value = column;
     DOM.noteDate.value = formatDateISO(new Date());
+    DOM.noteTime.value = '';
     DOM.noteTags.value = '';
 
     // Reset color selection
@@ -1296,6 +1312,7 @@ function openEditModal(noteId) {
     DOM.noteTitle.value = note.title;
     DOM.noteDescription.value = note.description;
     DOM.noteDate.value = note.date;
+    DOM.noteTime.value = note.time || '';
     DOM.noteTags.value = note.tags ? note.tags.join(', ') : '';
     DOM.noteRecurrence.value = note.recurrence || 'none';
 
@@ -1804,47 +1821,61 @@ function initNotifications() {
         checkReminders();
     }
 
-    // Check periodically (every 15 minutes) to ensure app stays "alive" for notifications
+    // Check minutely for precise notifications
     setInterval(() => {
         if (localStorage.getItem('notificationsEnabled') === 'true') {
             checkReminders();
         }
-    }, 15 * 60 * 1000);
+    }, 60 * 1000);
 }
 
 function checkReminders() {
     if (!('Notification' in window) || Notification.permission !== 'granted') return;
 
-    const today = new Date().toISOString().split('T')[0];
-    const notesDueToday = AppState.notes.filter(note => {
-        // Only count active notes in Todo or In Progress
+    const now = new Date();
+    const today = formatDateISO(now);
+    const currentHours = now.getHours().toString().padStart(2, '0');
+    const currentMinutes = now.getMinutes().toString().padStart(2, '0');
+    const currentTime = `${currentHours}:${currentMinutes}`;
+
+    // Get notes due today that haven't been notified yet this minute
+    const notesDue = AppState.notes.filter(note => {
         const isActive = note.column === 'todo' || note.column === 'inprogress';
-        return note.date === today && isActive;
+        if (!isActive) return false;
+
+        // Date check
+        if (note.date !== today) return false;
+
+        // Time check
+        if (note.time) {
+            return note.time === currentTime;
+        } else {
+            // For notes without time, notify at 9:00 AM once
+            return currentTime === '09:00';
+        }
     });
 
-    if (notesDueToday.length === 0) return;
+    if (notesDue.length === 0) return;
 
-    // Check if we already notified today to avoid spam
-    const lastNotified = localStorage.getItem('lastNotificationDate');
-    if (lastNotified === today) return;
+    // Avoid duplicate notifications for the same note/time
+    // We use session-based tracking or simple timestamp check
+    const lastCheck = sessionStorage.getItem('lastNotificationTime');
+    if (lastCheck === currentTime) return;
 
-    // Send notification
-    const text = notesDueToday.length === 1
-        ? `Task due today: ${notesDueToday[0].title}`
-        : `You have ${notesDueToday.length} tasks due today! 📅`;
+    notesDue.forEach(note => {
+        try {
+            new Notification('GlamStickyNote', {
+                body: `It's time for: ${note.title} ⏰`,
+                icon: 'assets/icon-192.png',
+                tag: `reminder-${note.id}`,
+                requireInteraction: true
+            });
+        } catch (e) {
+            console.error('Notification failed:', e);
+        }
+    });
 
-    try {
-        new Notification('GlamStickyNote', {
-            body: text,
-            icon: 'assets/icon-192.png',
-            tag: 'daily-reminder', // Replaces older notifications with same tag
-            requireInteraction: true // Keeps notification visible until clicked
-        });
-
-        localStorage.setItem('lastNotificationDate', today);
-    } catch (e) {
-        console.error('Notification failed:', e);
-    }
+    sessionStorage.setItem('lastNotificationTime', currentTime);
 }
 
 // ========================================
