@@ -1012,20 +1012,20 @@ function renderNotes(searchQuery = '') {
         const el = document.createElement('div');
         el.className = 'empty-state';
 
-        let icon = '📝';
+        let icon = ICONS.edit;
         let text = 'No notes';
 
         switch (type) {
             case 'todo':
-                icon = '🎉';
+                icon = ICONS.check;
                 text = 'All caught up!';
                 break;
             case 'doing':
-                icon = '⏳';
+                icon = ICONS.clock;
                 text = 'Nothing in progress';
                 break;
             case 'done':
-                icon = '✨';
+                icon = ICONS.star;
                 text = 'No completed tasks yet';
                 break;
         }
@@ -1078,7 +1078,7 @@ function addNote(noteData) {
     AppState.notes.push(note);
     saveToStorage();
     pushHistory('add', `Added: "${note.title}"`);
-    showToast(`✅ Added: "${note.title}"`, 'success', null, 2000);
+    showToast(`${ICONS.check} Added: "${note.title}"`, 'success', null, 2000);
     renderNotes();
 }
 
@@ -1089,7 +1089,7 @@ function updateNote(id, updates) {
         AppState.notes[noteIndex] = { ...AppState.notes[noteIndex], ...updates };
         saveToStorage();
         pushHistory('edit', `Edited: "${oldTitle}"`);
-        showToast(`✏️ Edited: "${oldTitle}"`, 'success', null, 2000);
+        showToast(`${ICONS.edit} Edited: "${oldTitle}"`, 'success', null, 2000);
         renderNotes();
     }
 }
@@ -1107,7 +1107,7 @@ function deleteNote(id) {
         AppState.notes = AppState.notes.filter(n => n.id !== id);
         saveToStorage();
         pushHistory('delete', `Deleted: "${note.title}"`);
-        showToast(`🗑️ Deleted: "${note.title}"`, 'success', null, 2000);
+        showToast(`${ICONS.trash} Deleted: "${note.title}"`, 'success', null, 2000);
         renderNotes();
     }, 300);
 }
@@ -1176,7 +1176,7 @@ function toggleNoteComplete(id) {
         }
         saveToStorage();
         pushHistory('toggle', `${note.completed ? 'Completed' : 'Reopened'}: "${note.title}"`);
-        showToast(`${note.completed ? '✅ Completed' : '🔄 Reopened'}: "${note.title}"`, 'success', null, 2000);
+        showToast(`${note.completed ? ICONS.check + ' Completed' : ICONS.refresh + ' Reopened'}: "${note.title}"`, 'success', null, 2000);
         renderNotes();
     }
 }
@@ -1195,7 +1195,7 @@ function moveNote(id, newColumn) {
 
         const columnNames = { 'todo': 'To Do', 'inprogress': 'In Progress', 'done': 'Done' };
         pushHistory('move', `Moved "${note.title}" to ${columnNames[newColumn]}`);
-        showToast(`➡️ Moved "${note.title}" to ${columnNames[newColumn]}`, 'success', null, 2000);
+        showToast(`${ICONS.arrowRight} Moved "${note.title}" to ${columnNames[newColumn]}`, 'success', null, 2000);
         renderNotes();
     }
 }
@@ -1773,7 +1773,7 @@ function initNotifications() {
         if (e.target.checked) {
             // Request permission
             if (!('Notification' in window)) {
-                showToast('❌ This browser does not support notifications.', 'error');
+                showToast(`${ICONS.alert} This browser does not support notifications.`, 'error');
                 e.target.checked = false;
                 return;
             }
@@ -1782,7 +1782,7 @@ function initNotifications() {
             if (permission === 'granted') {
                 localStorage.setItem('notificationsEnabled', 'true');
                 checkReminders(); // Check immediately
-                showToast('🔔 Notifications enabled!', 'success');
+                showToast(`${ICONS.bell} Notifications enabled!`, 'success');
 
                 // Welcome notification
                 new Notification('GlamStickyNote', {
@@ -1791,11 +1791,11 @@ function initNotifications() {
                 });
             } else {
                 e.target.checked = false;
-                showToast('❌ Permission denied. Please enable in browser settings.', 'error');
+                showToast(`${ICONS.alert} Permission denied. Please enable in browser settings.`, 'error');
             }
         } else {
             localStorage.setItem('notificationsEnabled', 'false');
-            showToast('🔕 Notifications disabled.', 'neutral');
+            showToast(`${ICONS.bellOff} Notifications disabled.`, 'neutral');
         }
     });
 
@@ -1936,14 +1936,14 @@ function init() {
     DOM.installApp.addEventListener('click', async () => {
         // Check if already installed
         if (isStandalone()) {
-            showToast('✅ App is already installed!', 'success');
+            showToast(`${ICONS.check} App is already installed!`, 'success');
             DOM.installApp.style.display = 'none';
             return;
         }
 
         // iOS Instructions - check at click time
         if (isIOS()) {
-            showToast('📲 iOS: Tap Share button ⬆️ → Add to Home Screen', 'info', null, 5000);
+            showToast(`${ICONS.share} iOS: Tap Share button ⬆️ → Add to Home Screen`, 'info', null, 5000);
             return;
         }
 
@@ -1954,15 +1954,15 @@ function init() {
                 const { outcome } = await deferredPrompt.userChoice;
 
                 if (outcome === 'accepted') {
-                    showToast('✅ App installed successfully!', 'success');
+                    showToast(`${ICONS.check} App installed successfully!`, 'success');
                     deferredPrompt = null;
                     DOM.installApp.style.display = 'none';
                 } else {
-                    showToast('ℹ️ Installation cancelled', 'info');
+                    showToast(`${ICONS.x} Installation cancelled`, 'info');
                 }
             } catch (error) {
                 console.error('Error showing install prompt:', error);
-                showToast('⚠️ Unable to show install prompt. Try via browser menu.', 'warning', null, 4000);
+                showToast(`${ICONS.alert} Unable to show install prompt. Try via browser menu.`, 'warning', null, 4000);
             }
             return;
         }
@@ -1970,7 +1970,7 @@ function init() {
         // Fallback: No prompt available
         // Check if it's an HTTPS issue
         if (location.protocol !== 'https:' && location.hostname !== 'localhost' && !location.hostname.startsWith('192.168')) {
-            showToast('⚠️ PWA requires HTTPS. Please access via https:// or use ngrok/similar tool', 'warning', null, 6000);
+            showToast(`${ICONS.alert} PWA requires HTTPS. Please access via https:// or use ngrok/similar tool`, 'warning', null, 6000);
             return;
         }
 

@@ -68,7 +68,16 @@
 
     <!-- Offline Indicator -->
     <div class="offline-indicator" id="offlineIndicator">
-        <span class="offline-icon">📡</span>
+        <span class="offline-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+                <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+                <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+                <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+                <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+                <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+                <line x1="12" y1="20" x2="12.01" y2="20"></line>
+            </svg></span>
         <span class="offline-text">Offline</span>
     </div>
 
@@ -98,27 +107,67 @@
             <!-- Quick Nav -->
             <nav class="quick-nav">
                 <button class="nav-item" id="navAll">
-                    <span class="nav-icon">📋</span>
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <line x1="8" y1="6" x2="21" y2="6"></line>
+                            <line x1="8" y1="12" x2="21" y2="12"></line>
+                            <line x1="8" y1="18" x2="21" y2="18"></line>
+                            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                        </svg></span>
                     <span>All Notes</span>
                 </button>
                 <button class="nav-item active" id="navToday">
-                    <span class="nav-icon">📅</span>
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg></span>
                     <span>Today</span>
                 </button>
                 <button class="nav-item" id="navUpcoming">
-                    <span class="nav-icon">📆</span>
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg></span>
                     <span>Upcoming</span>
                 </button>
                 <button class="nav-item" id="navTags">
-                    <span class="nav-icon">🏷️</span>
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z">
+                            </path>
+                            <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                        </svg></span>
                     <span>Tags</span>
                 </button>
                 <button class="nav-item" id="navSettings">
-                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path
+                                d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z">
+                            </path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg></span>
                     <span>Settings</span>
                 </button>
                 <button class="nav-item" id="installApp" style="display: none;">
-                    <span class="nav-icon">📲</span>
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg></span>
                     <span>Install App</span>
                 </button>
             </nav>
@@ -182,11 +231,30 @@
                     <div class="search-container">
                         <input type="search" class="search-input" id="searchInput" placeholder="Search notes..."
                             aria-label="Search notes">
-                        <span class="search-icon">🔍</span>
+                        <span class="search-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg></span>
                     </div>
-                    <button class="header-btn" id="selectModeBtn" title="Bulk select notes">📋 Select</button>
+                    <button class="header-btn" id="selectModeBtn" title="Bulk select notes"><svg
+                            xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="8" y1="6" x2="21" y2="6"></line>
+                            <line x1="8" y1="12" x2="21" y2="12"></line>
+                            <line x1="8" y1="18" x2="21" y2="18"></line>
+                            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                        </svg> Select</button>
                     <div class="user-avatar" id="userAvatar">
-                        <span>👤</span>
+                        <span class="text-2xl"><svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg></span>
                     </div>
                 </div>
             </header>
@@ -196,19 +264,38 @@
                 <div class="smart-filters" id="smartFilters">
                     <button class="filter-pill" id="filterOverdue" data-filter="overdue"
                         aria-label="Show overdue notes">
-                        <span class="filter-emoji">🔴</span>
+                        <span class="filter-emoji"><svg xmlns="http://www.w3.org/2000/svg" class="icon"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg></span>
                         <span class="filter-label">Overdue</span>
                         <span class="filter-count">0</span>
                     </button>
                     <button class="filter-pill" id="filterHighPriority" data-filter="high-priority"
                         aria-label="Show high priority notes">
-                        <span class="filter-emoji">⭐</span>
+                        <span class="filter-emoji"><svg xmlns="http://www.w3.org/2000/svg" class="icon"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <polygon
+                                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                                </polygon>
+                            </svg></span>
                         <span class="filter-label">High Priority</span>
                         <span class="filter-count">0</span>
                     </button>
                     <button class="filter-pill" id="filterThisWeek" data-filter="this-week"
                         aria-label="Show notes due this week">
-                        <span class="filter-emoji">📆</span>
+                        <span class="filter-emoji"><svg xmlns="http://www.w3.org/2000/svg" class="icon"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg></span>
                         <span class="filter-label">This Week</span>
                         <span class="filter-count">0</span>
                     </button>
@@ -219,18 +306,50 @@
             <div class="bulk-action-bar" id="bulkActionBar" style="display: none;">
                 <span class="selection-count">0 selected</span>
                 <div class="bulk-actions">
-                    <button class="bulk-btn" id="selectAllBtn" title="Select all visible notes">✓ All</button>
-                    <button class="bulk-btn" id="bulkColorBtn" title="Change color">🎨 Color</button>
-                    <button class="bulk-btn" id="bulkMoveBtn" title="Move to column">➡️ Move</button>
-                    <button class="bulk-btn danger" id="bulkDeleteBtn" title="Delete selected">🗑️ Delete</button>
-                    <button class="bulk-btn" id="cancelSelectBtn" title="Cancel selection">✕ Cancel</button>
+                    <button class="bulk-btn" id="selectAllBtn" title="Select all visible notes"><svg
+                            xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg> All</button>
+                    <button class="bulk-btn" id="bulkColorBtn" title="Change color"><svg
+                            xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="13.5" cy="6.5" r=".5"></circle>
+                            <circle cx="17.5" cy="10.5" r=".5"></circle>
+                            <circle cx="8.5" cy="7.5" r=".5"></circle>
+                            <circle cx="6.5" cy="12.5" r=".5"></circle>
+                            <path
+                                d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.55 0 1-.45 1-1 0-2.5 5-2.5 5-5 0-1.76-.5-3.5-3-3.5 0 2.5-5 5-4.5-9.5z">
+                            </path>
+                        </svg> Color</button>
+                    <button class="bulk-btn" id="bulkMoveBtn" title="Move to column"><svg
+                            xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg> Move</button>
+                    <button class="bulk-btn danger" id="bulkDeleteBtn" title="Delete selected"><svg
+                            xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                            </path>
+                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                        </svg> Delete</button>
+                    <button class="bulk-btn" id="cancelSelectBtn" title="Cancel selection"><svg
+                            xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg> Cancel</button>
                 </div>
             </div>
 
             <!-- Quick Add -->
             <div class="quick-add-container">
                 <input type="text" class="quick-add-input" id="quickAddInput"
-                    placeholder="✏️ Quick add a note... (press Enter)">
+                    placeholder="Quick add a note... (press Enter)">
                 <div class="quick-add-hint">Press <strong>?</strong> for keyboard shortcuts</div>
             </div>
 
@@ -395,7 +514,12 @@
                         <span class="note-recurrence" style="display: none;"></span>
                     </div>
                     <div class="note-actions">
-                        <button class="note-action-btn edit-btn" aria-label="Edit note">✏️</button>
+                        <button class="note-action-btn edit-btn" aria-label="Edit note"><svg
+                                xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg></button>
                         <button class="note-action-btn delete-btn" aria-label="Delete note">🗑️</button>
                     </div>
                 </div>
@@ -409,7 +533,14 @@
     <div class="modal-overlay" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
         <div class="modal-content settings-modal">
             <div class="modal-header">
-                <h2 class="modal-title" id="settingsTitle">⚙️ Settings</h2>
+                <h2 class="modal-title" id="settingsTitle"><svg xmlns="http://www.w3.org/2000/svg" class="icon"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path
+                            d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z">
+                        </path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg> Settings</h2>
                 <button class="modal-close" id="settingsClose" aria-label="Close settings">×</button>
             </div>
             <div class="settings-content">
@@ -429,15 +560,41 @@
                 <div class="setting-group">
                     <h3 class="setting-title">Data Management</h3>
                     <div class="export-buttons" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;">
-                        <button class="btn btn-secondary" id="exportData" style="flex: 1;">📤 Export JSON</button>
-                        <button class="btn btn-secondary" id="exportCSV" style="flex: 1;">📊 Export CSV</button>
+                        <button class="btn btn-secondary" id="exportData" style="flex: 1;"><svg
+                                xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg> Export JSON</button>
+                        <button class="btn btn-secondary" id="exportCSV" style="flex: 1;"><svg
+                                xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg> Export CSV</button>
                     </div>
-                    <button class="btn btn-secondary" id="importData" style="width: 100%;">📥 Import Notes</button>
+                    <button class="btn btn-secondary" id="importData" style="width: 100%;"><svg
+                            xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg> Import Notes</button>
                     <input type="file" id="importFile" accept=".json" style="display: none;">
                 </div>
                 <div class="setting-group">
                     <h3 class="setting-title">Danger Zone</h3>
-                    <button class="btn btn-danger" id="clearAllData">🗑️ Clear All Notes</button>
+                    <button class="btn btn-danger" id="clearAllData"><svg xmlns="http://www.w3.org/2000/svg"
+                            class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                            </path>
+                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                        </svg> Clear All Notes</button>
                 </div>
                 <div class="setting-group">
                     <h3 class="setting-title">About</h3>
@@ -452,14 +609,33 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <!-- Mobile Bulk Select FAB -->
-    <button class="mobile-bulk-fab" id="mobileBulkFab" title="Bulk select notes"
-        aria-label="Bulk select notes">📋</button>
+    <button class="mobile-bulk-fab" id="mobileBulkFab" title="Bulk select notes" aria-label="Bulk select notes"><svg
+            xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg></button>
 
     <!-- Keyboard Shortcuts Modal -->
     <div class="modal-overlay" id="shortcutsModal" role="dialog" aria-modal="true" aria-labelledby="shortcutsTitle">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title" id="shortcutsTitle">⌨️ Keyboard Shortcuts</h2>
+                <h2 class="modal-title" id="shortcutsTitle"><svg xmlns="http://www.w3.org/2000/svg" class="icon"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
+                        <line x1="6" y1="8" x2="6" y2="8"></line>
+                        <line x1="10" y1="8" x2="10" y2="8"></line>
+                        <line x1="14" y1="8" x2="14" y2="8"></line>
+                        <line x1="18" y1="8" x2="18" y2="8"></line>
+                        <line x1="6" y1="12" x2="6" y2="12"></line>
+                        <line x1="10" y1="12" x2="10" y2="12"></line>
+                        <line x1="14" y1="12" x2="14" y2="12"></line>
+                        <line x1="18" y1="12" x2="18" y2="12"></line>
+                        <line x1="6" y1="16" x2="6" y2="16"></line>
+                        <line x1="10" y1="16" x2="14" y2="16"></line>
+                        <line x1="18" y1="16" x2="18" y2="16"></line>
+                    </svg> Keyboard Shortcuts</h2>
                 <button class="modal-close" id="shortcutsClose" aria-label="Close">×</button>
             </div>
             <div class="shortcuts-list">
@@ -499,7 +675,13 @@
     <div class="modal" id="install-modal" role="dialog" aria-modal="true" aria-labelledby="installTitle">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="installTitle">Install App 📲</h2>
+                <h2 id="installTitle">Install App <svg xmlns="http://www.w3.org/2000/svg" class="icon"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg></h2>
                 <button class="modal-close" id="installClose" aria-label="Close installation guide">×</button>
             </div>
             <div class="install-guide">
@@ -508,7 +690,13 @@
                     <div class="step">
                         <span class="step-num">1</span>
                         <p>Tap the <strong>browser menu</strong> (⋮) at the top right.</p>
-                        <div class="pointing-arrow">↗️</div>
+                        <div class="pointing-arrow"><svg xmlns="http://www.w3.org/2000/svg" class="icon"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                <polyline points="15 3 21 3 21 9"></polyline>
+                                <line x1="10" y1="14" x2="21" y2="3"></line>
+                            </svg></div>
                     </div>
                     <div class="step">
                         <span class="step-num">2</span>
@@ -520,7 +708,8 @@
         </div>
     </div>
 
-    <script src="js/app.js"></script>
+    <script src="js/icons.js"></script>
+    <script src="js/app.js" defer></script>
 </body>
 
 </html>

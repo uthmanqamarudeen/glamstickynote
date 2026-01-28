@@ -79,7 +79,16 @@ function build() {
         const cssReduction = ((1 - minCSS.length / cssContent.length) * 100).toFixed(1);
         console.log(`✨ CSS: ${cssContent.length} → ${minCSS.length} bytes (${cssReduction}% smaller)`);
 
-        // 2. Minify JS
+        // 2. JS (App & Icons)
+        console.log('✨ Minifying JS...');
+
+        // Icons.js
+        const iconsPath = path.join(ROOT_DIR, 'js', 'icons.js');
+        const iconsContent = fs.readFileSync(iconsPath, 'utf8');
+        const minIcons = minifyJS(iconsContent);
+        fs.writeFileSync(path.join(DIST_DIR, 'js', 'icons.min.js'), minIcons);
+
+        // App.js
         const jsPath = path.join(ROOT_DIR, 'js', 'app.js');
         const jsContent = fs.readFileSync(jsPath, 'utf8');
         const minJS = minifyJS(jsContent);
@@ -89,17 +98,20 @@ function build() {
 
         // 3. Update and copy index.html
         let htmlContent = fs.readFileSync(path.join(ROOT_DIR, 'index.html'), 'utf8');
-        htmlContent = htmlContent
-            .replace('href="css/styles.css"', 'href="css/styles.min.css"')
-            .replace('src="js/app.js"', 'src="js/app.min.js"');
+        htmlContent = htmlContent.replace('href="css/styles.css"', 'href="css/styles.min.css"');
+        htmlContent = htmlContent.replace('src="js/icons.js"', 'src="js/icons.min.js"');
+        htmlContent = htmlContent.replace('src="js/app.js"', 'src="js/app.min.js"');
         fs.writeFileSync(path.join(DIST_DIR, 'index.html'), htmlContent);
         console.log('📝 Updated index.html');
 
         // 4. Update and copy sw.js (Service Worker)
         let swContent = fs.readFileSync(path.join(ROOT_DIR, 'sw.js'), 'utf8');
-        swContent = swContent
-            .replace("'./css/styles.css'", "'./css/styles.min.css'")
-            .replace("'./js/app.js'", "'./js/app.min.js'");
+        // Update paths in SW
+        swContent = swContent.replace("'./css/styles.css'", "'./css/styles.min.css'");
+        swContent = swContent.replace("'./js/icons.js'", "'./js/icons.min.js'");
+        swContent = swContent.replace("'./js/app.js'", "'./js/app.min.js'");
+
+        // Minify SW
         const minSW = minifyJS(swContent);
         fs.writeFileSync(path.join(DIST_DIR, 'sw.js'), minSW);
         console.log('⚙️  Updated sw.js');
