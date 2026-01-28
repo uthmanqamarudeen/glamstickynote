@@ -1,0 +1,16 @@
+{
+    "name": "glam-sticky-note",
+    "version": "1.0.0",
+    "description": "A premium digital sticky note PWA",
+    "scripts": {
+        "build": "node scripts/build.js",
+        "dev": "npx serve . -l 3000"
+    },
+    "keywords": [
+        "pwa",
+        "sticky-note",
+        "productivity"
+    ],
+    "author": "",
+    "license": "ISC"
+}
